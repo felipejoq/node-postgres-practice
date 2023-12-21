@@ -1,11 +1,23 @@
 import express from 'express';
 import { envs } from './config/plugins/envs.js';
 import { AppRouter } from './routes/v1/appRoutes.js';
+import { Server } from './Server.js';
 
+// Servidor de Express.
 const app = express();
 
-app.use('/', AppRouter)
+// Función de arranque.
+const main = async () => {
+  const server = new Server({
+    app,
+    port: envs.PORT,
+    routes: AppRouter.routes
+  });
 
-app.listen(envs.PORT, () => {
-  console.log(`🚀 App Ready on: ${envs.BASE_URL}:${envs.PORT}`);
-})
+  server.start()
+}
+
+// Inicialización.
+(async () => {
+  await main();
+})();

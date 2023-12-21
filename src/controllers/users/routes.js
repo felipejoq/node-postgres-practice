@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { UsersController } from './controller.js';
+import { UserService } from "../../services/user.service.js";
 
 export class UserRoutes {
 

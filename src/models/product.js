@@ -1,4 +1,4 @@
-// TODO: modelo de producto
+// TODO: Definir modelo de producto
 export class Product {
   constructor() {}
 }

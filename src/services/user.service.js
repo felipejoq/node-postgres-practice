@@ -1,11 +1,16 @@
 import { CustomError } from "../config/errors/custom.errors.js";
 import { Encoder } from "../config/plugins/encoder.js";
 import { query } from "../database/db.js";
-import { CREATE_USER, GET_USER_BY_EMAIL } from "../database/queries/users.query.js";
+import { CREATE_USER, GET_USERS_PAGINATE, GET_USER_BY_EMAIL } from "../database/queries/users.query.js";
 import { User } from "../models/User.js"
 
 export class UserService {
   constructor() { }
+
+  static async getUsers() {
+    const result = await query(GET_USERS_PAGINATE, [5, 0]);
+    console.log(result);
+  }
 
   static async saveUser(userDto) {
 

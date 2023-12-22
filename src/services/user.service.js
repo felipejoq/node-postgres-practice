@@ -12,7 +12,7 @@ import { User } from "../domain/models/User.js"
 export class UserService {
   constructor() { }
 
-  static async getUsers({ page, limit }) {
+  async getUsers({ page, limit }) {
 
     const [usersResult, totalResult] = await Promise.all([
       query(GET_USERS_AND_ROLES_PAGINATE, [(page - 1) * limit, limit]),
@@ -21,21 +21,21 @@ export class UserService {
 
     const users = usersResult?.rows;
     const total = parseInt(totalResult?.rows[0].count);
-    const haveNext = (page + limit < total);
-    const havePrev = (page - 1 > 0) && haveNext;
+    const haveNext = (page * limit < total);
+    const havePrev = (page - 1 > 0) && (page + limit <= total);
 
     return {
       page,
       limit,
       total,
       next: haveNext ? `/v1/user?page=${(page + 1)}&limit=${limit}` : null,
-      prev: havePrev ? `/v1/user?offset${(page - 1)}&limit=${limit}` : null,
+      prev: havePrev ? `/v1/user?page=${(page - 1)}&limit=${limit}` : null,
       users: users,
     };
 
   }
 
-  static async saveUser(userDto) {
+  async saveUser(userDto) {
 
     const result = await query(GET_USER_BY_EMAIL, [userDto.email]);
 
@@ -56,7 +56,7 @@ export class UserService {
 
   }
 
-  static async updateUser(userDto) {
+  async updateUser(userDto) {
     throw new Error('Method userservice.updateUser not implemented')
   }
 

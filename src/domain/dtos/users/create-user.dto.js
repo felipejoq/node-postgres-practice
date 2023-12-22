@@ -9,7 +9,7 @@ export class CreateUserDto {
     this.password = password;
   }
 
-  static async create(body) {
+  static create(body) {
 
     const { username, email, password } = body;
 

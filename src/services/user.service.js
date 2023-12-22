@@ -50,7 +50,7 @@ export class UserService {
 
   async saveUser(userDto) {
 
-    await this.roleService.checkRoles(userDto.roles);
+    await this.roleService.checkAllowedRoles(userDto.roles);
 
     const { rows: exists } = await query(GET_USER_BY_EMAIL, [userDto.email]);
 

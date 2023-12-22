@@ -24,7 +24,7 @@ export class RoleService {
 
   }
 
-  async checkRoles(roles) {
+  async checkAllowedRoles(roles) {
     const { rows: [{ rolesid }] } = await query(GET_ALL_ROLES_ID);
 
     const isContained = roles.every((element) => {

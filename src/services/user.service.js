@@ -1,15 +1,38 @@
 import { CustomError } from "../config/errors/custom.errors.js";
 import { Encoder } from "../config/plugins/encoder.js";
 import { query } from "../database/db.js";
-import { CREATE_USER, GET_USERS_PAGINATE, GET_USER_BY_EMAIL } from "../database/queries/users.query.js";
+import {
+  CREATE_USER,
+  GET_TOTAL_USERS,
+  GET_USERS_AND_ROLES_PAGINATE,
+  GET_USER_BY_EMAIL
+} from "../database/queries/users.query.js";
 import { User } from "../models/User.js"
 
 export class UserService {
   constructor() { }
 
-  static async getUsers() {
-    const result = await query(GET_USERS_PAGINATE, [5, 0]);
-    console.log(result);
+  static async getUsers({ page, limit }) {
+
+    const [usersResult, totalResult] = await Promise.all([
+      query(GET_USERS_AND_ROLES_PAGINATE, [(page - 1) * limit, limit]),
+      query(GET_TOTAL_USERS)
+    ]);
+
+    const users = usersResult?.rows;
+    const total = parseInt(totalResult?.rows[0].count);
+    const haveNext = (page + limit < total);
+    const havePrev = (page - 1 > 0) && haveNext;
+
+    return {
+      page,
+      limit,
+      total,
+      next: haveNext ? `/v1/user?page=${(page + 1)}&limit=${limit}` : null,
+      prev: havePrev ? `/v1/user?offset${(page - 1)}&limit=${limit}` : null,
+      users: users,
+    };
+
   }
 
   static async saveUser(userDto) {

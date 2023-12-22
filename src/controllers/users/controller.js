@@ -1,5 +1,5 @@
-import { CustomError } from "../../config/errors/custom.errors.js";
 import { handleError } from "../../config/errors/hendler.errors.js";
+import { PaginationDto } from "../../models/dtos/shared/pagination.dto.js";
 import { CreateUserDto } from "../../models/dtos/users/create-user.dto.js";
 import { UserService } from "../../services/user.service.js";
 
@@ -8,10 +8,17 @@ export class UsersController {
   constructor() { }
 
   static getUsers = async (req, res) => {
-    console.log('getUsers');
-    res.json({
-      ok: true
-    })
+
+    const { page, limit } = req.query;
+    const [error, pagination] = PaginationDto.create({
+      page: parseInt(page), limit: parseInt(limit)
+    });
+
+    if (error) return res.status(400).json({ error });
+
+    const data = await UserService.getUsers(pagination)
+
+    res.json(data)
   }
 
   static getUserById = async (req, res) => {

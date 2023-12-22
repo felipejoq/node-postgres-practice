@@ -9,8 +9,8 @@ export class AppRouter {
   static get routes() {
     const AppRouter = Router();
 
-    AppRouter.use('/v1/product', ProductRoutes.routes);
-    AppRouter.use('/v1/user', UserRoutes.routes);
+    AppRouter.use('/api/v1/user', UserRoutes.routes);
+    AppRouter.use('/api/v1/product', ProductRoutes.routes);
 
     return AppRouter;
   }

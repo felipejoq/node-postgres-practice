@@ -1,13 +1,14 @@
 import { handleError } from "../../config/errors/hendler.errors.js";
-import { PaginationDto } from "../../models/dtos/shared/pagination.dto.js";
-import { CreateUserDto } from "../../models/dtos/users/create-user.dto.js";
-import { UserService } from "../../services/user.service.js";
+import { PaginationDto } from "../../domain/dtos/shared/pagination.dto.js";
+import { CreateUserDto } from "../../domain/dtos/users/create-user.dto.js";
 
 export class UsersController {
 
-  constructor() { }
+  constructor(userService) {
+    this.userService = userService;
+  }
 
-  static getUsers = async (req, res) => {
+  getUsers = (req, res) => {
 
     const { page, limit } = req.query;
     const [error, pagination] = PaginationDto.create({
@@ -16,33 +17,37 @@ export class UsersController {
 
     if (error) return res.status(400).json({ error });
 
-    const data = await UserService.getUsers(pagination)
+    this.userService.getUsers(pagination)
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
 
-    res.json(data)
   }
 
-  static getUserById = async (req, res) => {
+  getUserById = async (req, res) => {
     const { id } = req.params;
-    console.log('getUserById', { id });
-    res.json({
-      ok: true
-    })
+
+    if (isNaN(+id))
+      return res.status(400).json({ error: `El parámetro ${id} no es un número válido.` });
+
+    this.userService.getUserById(id)
+      .then(user => res.json(user))
+      .catch(e => handleError(e, res));
   }
 
-  static createUser = async (req, res) => {
+  createUser = (req, res) => {
 
     const body = req.body;
-    const [error, newUserDto] = await CreateUserDto.create(body);
+    const [error, newUserDto] = CreateUserDto.create(body);
 
     if (error) return res.status(400).json({ error });
 
-    UserService.saveUser(newUserDto)
+    this.userService.saveUser(newUserDto)
       .then(newUser => res.json(newUser))
       .catch(e => handleError(e, res))
 
   }
 
-  static updateUserById = async (req, res) => {
+  updateUserById = async (req, res) => {
     const { id } = req.params;
     const body = req.body;
 
@@ -52,7 +57,7 @@ export class UsersController {
     })
   }
 
-  static deleteUserById = async (req, res) => {
+  deleteUserById = async (req, res) => {
     const { id } = req.params;
 
     console.log('deleteUserById', { id });

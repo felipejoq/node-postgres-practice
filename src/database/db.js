@@ -13,7 +13,6 @@ export const query = async (text, params, callback) => {
   try {
     client.query('BEGIN')
     const res = client.query(text, params, callback);
-    // await client.end();
     await client.query('COMMIT')
     return res;
   } catch (error) {

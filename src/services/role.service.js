@@ -27,13 +27,14 @@ export class RoleService {
   async checkAllowedRoles(roles) {
     const { rows: [{ rolesid }] } = await query(GET_ALL_ROLES_ID);
 
-    const isContained = roles.every((element) => {
-      return rolesid.includes(element);
+    const isContained = roles.every((role) => {
+      return rolesid.includes(role);
     });
 
     if (!isContained)
       throw CustomError.badRequest(`Roles permitidos: [${rolesid}]`);
 
+    return isContained;
   }
 
 }

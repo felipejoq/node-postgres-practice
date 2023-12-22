@@ -57,6 +57,15 @@ export class UsersController {
     })
   }
 
+  toggleUserById = async (req, res) => {
+    const { id } = req.params;
+
+    console.log('toggleUserById', { id });
+    res.json({
+      ok: true
+    })
+  }
+
   deleteUserById = async (req, res) => {
     const { id } = req.params;
 

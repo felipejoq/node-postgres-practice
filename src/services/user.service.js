@@ -43,7 +43,17 @@ export class UserService {
     const user = result.rows[0];
 
     if (!user)
-      throw CustomError.notFound('El usuario no existe o la id es inválida.');
+      throw CustomError.notFound('El usuario no existe o la id es inválida');
+
+    return user;
+  }
+
+  async getUserByEmail(email) {
+    const result = await query(GET_USER_BY_EMAIL, [email]);
+    const user = result.rows[0];
+
+    if (!user)
+      throw CustomError.notFound('El usuario no existe o el email no es válido');
 
     return user;
   }
@@ -54,7 +64,7 @@ export class UserService {
 
     const { rows: exists } = await query(GET_USER_BY_EMAIL, [userDto.email]);
 
-    if (exists.length >= 1)
+    if (exists.length > 0)
       throw CustomError.badRequest('Usuario ya existe');
 
     userDto.password = await Encoder.getHash(userDto.password)
@@ -78,8 +88,12 @@ export class UserService {
     throw new Error('Method userservice.updateUser not implemented')
   }
 
-  async deleteUserById(id) {
+  async toggleUserById(id) {
+    throw new Error('Method userservice.toggleUserById not implemented')
+  }
 
+  async deleteUserById(id) {
+    throw new Error('Method userservice.deleteUserById not implemented')
   }
 
 }

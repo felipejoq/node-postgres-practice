@@ -52,11 +52,3 @@ VALUES
 (4, 3),
 (5, 3),
 (6, 3);
-
-SELECT u.id, u.username, ARRAY_AGG(r.rol) AS roles
-FROM users AS u
-INNER JOIN users_roles AS ur
-ON u.id = ur.user_id
-INNER JOIN roles AS r
-ON r.id = ur.role_id
-GROUP BY u.id, u.username;

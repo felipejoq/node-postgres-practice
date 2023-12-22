@@ -10,7 +10,7 @@ export class RoleService {
 
   constructor() { }
 
-  async setRoleToUser(userId, roles = []) {
+  async setRoleUser(userId, roles = []) {
 
     await Promise.all(roles.map(rolId => {
       return query(SET_ROL_TO_USER, [userId, rolId]);

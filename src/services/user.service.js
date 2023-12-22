@@ -65,7 +65,7 @@ export class UserService {
 
     const { rows: [user] } = await query(CREATE_USER, [name, email, password]);
 
-    const rolesUser = await this.roleService.setRoleToUser(user.id, roles);
+    const rolesUser = await this.roleService.setRoleUser(user.id, roles);
 
     delete user.password;
     user.roles = rolesUser;

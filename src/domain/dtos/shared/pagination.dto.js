@@ -5,7 +5,7 @@ export class PaginationDto {
     this.limit = limit;
   }
 
-  static create({ page = 1, limit = 3 }) {
+  static create({ page = 1, limit = 10 }) {
 
     if (isNaN(page) || isNaN(limit)) return ['Limit and page must be numbers'];
 

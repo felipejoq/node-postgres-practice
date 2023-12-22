@@ -1,13 +1,14 @@
 CREATE TABLE
   users (
     id SERIAL PRIMARY KEY,
-    username VARCHAR NOT NULL,
+    name VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
+    active BOOLEAN DEFAULT true NOT NULL,
     password VARCHAR NOT NULL
   );
 
 INSERT INTO
-  users (username, email, password)
+  users (name, email, password)
 VALUES
   ('Felipe', 'felipe@test.test', '$2b$10$MG071U/B.mdPpoyzeMA5i.uTPSBZdkFi3gD/HTvoczJed2w/uJhmy'),
   ('Hugo', 'hugo@test.test', '$2b$10$MG071U/B.mdPpoyzeMA5i.uTPSBZdkFi3gD/HTvoczJed2w/uJhmy'),
@@ -16,15 +17,18 @@ VALUES
   ('Hilda', 'hilda@test.test', '$2b$10$MG071U/B.mdPpoyzeMA5i.uTPSBZdkFi3gD/HTvoczJed2w/uJhmy'),
   ('Roberto', 'roberto@test.test', '$2b$10$MG071U/B.mdPpoyzeMA5i.uTPSBZdkFi3gD/HTvoczJed2w/uJhmy');
 
+INSERT INTO users (name, email, active, password)
+VALUES ('Maria', 'maria@test.test', false, '$2b$10$MG071U/B.mdPpoyzeMA5i.uTPSBZdkFi3gD/HTvoczJed2w/uJhmy');
+
 
 CREATE TABLE
   roles (
     id SERIAL PRIMARY KEY,
-    rol VARCHAR(20)
+    role VARCHAR(20)
   );
 
 INSERT INTO
-  roles (rol)
+  roles (role)
 VALUES
   ('ADMIN'), ('SELLER'), ('USER');
 
@@ -35,10 +39,12 @@ CREATE TABLE
     role_id BIGINT,
     CONSTRAINT fk_user_id
       FOREIGN KEY(user_id) 
-	      REFERENCES users(id),
+	      REFERENCES users(id)
+          ON DELETE CASCADE,
     CONSTRAINT fk_role_id
       FOREIGN KEY(role_id)
         REFERENCES roles(id)
+          ON DELETE CASCADE
   );
 
 INSERT INTO
@@ -51,4 +57,5 @@ VALUES
 (3, 3),
 (4, 3),
 (5, 3),
-(6, 3);
+(6, 3),
+(7, 3);

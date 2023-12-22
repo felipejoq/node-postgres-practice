@@ -19,15 +19,19 @@ export class UsersController {
 
     this.userService.getUsers(pagination)
       .then(data => res.json(data))
-      .catch(e => handleError(e, res))
+      .catch(e => handleError(e, res));
+
   }
 
   getUserById = async (req, res) => {
     const { id } = req.params;
-    console.log('getUserById', { id });
-    res.json({
-      ok: true
-    })
+
+    if (isNaN(+id))
+      return res.status(400).json({ error: `El parámetro ${id} no es un número válido.` });
+
+    this.userService.getUserById(id)
+      .then(user => res.json(user))
+      .catch(e => handleError(e, res));
   }
 
   createUser = (req, res) => {

@@ -3,14 +3,19 @@ import { Encoder } from "../config/plugins/encoder.js";
 import { query } from "../database/db.js";
 import {
   CREATE_USER,
+  GET_ROL_BY_ID,
   GET_TOTAL_USERS,
   GET_USERS_AND_ROLES_PAGINATE,
-  GET_USER_BY_EMAIL
+  GET_USER_BY_EMAIL,
+  GET_USER_BY_ID_WITH_ROLES,
+  SET_ROL_TO_USER
 } from "../database/queries/users.query.js";
 import { User } from "../domain/models/User.js"
 
 export class UserService {
-  constructor() { }
+  constructor(roleService) {
+    this.roleService = roleService;
+  }
 
   async getUsers({ page, limit }) {
 
@@ -28,36 +33,59 @@ export class UserService {
       page,
       limit,
       total,
-      next: haveNext ? `/v1/user?page=${(page + 1)}&limit=${limit}` : null,
-      prev: havePrev ? `/v1/user?page=${(page - 1)}&limit=${limit}` : null,
+      next: haveNext ? `/api/v1/user?page=${(page + 1)}&limit=${limit}` : null,
+      prev: havePrev ? `/api/v1/user?page=${(page - 1)}&limit=${limit}` : null,
       users: users,
     };
 
   }
 
+  async getUserById(id) {
+    const result = await query(GET_USER_BY_ID_WITH_ROLES, [id]);
+    const user = result.rows[0];
+
+    if (!user)
+      throw CustomError.notFound('El usuario no existe o la id es inválida.');
+
+    return user;
+  }
+
   async saveUser(userDto) {
 
-    const result = await query(GET_USER_BY_EMAIL, [userDto.email]);
+    const { rows: exists } = await query(GET_USER_BY_EMAIL, [userDto.email]);
 
-    if (result.rows.length >= 1)
+    if (exists.length >= 1)
       throw CustomError.badRequest('Usuario ya existe');
 
     userDto.password = await Encoder.getHash(userDto.password)
 
     const newUser = new User(userDto);
 
-    const { username, email, password } = newUser;
+    const { name, email, password, roles } = newUser;
 
-    await query(CREATE_USER, [username, email, password]);
+    try {
+      await this.roleService.checkRoles(roles);
+    } catch (error) {
+      throw error;
+    }
 
-    delete newUser.password;
+    const { rows: [user] } = await query(CREATE_USER, [name, email, password]);
 
-    return newUser;
+    const rolesUser = await this.roleService.setRoleToUser(user.id, roles);
+
+    delete user.password;
+    user.roles = rolesUser;
+
+    return user;
 
   }
 
-  async updateUser(userDto) {
+  async updateUserById(userDto) {
     throw new Error('Method userservice.updateUser not implemented')
+  }
+
+  async deleteUserById(id){
+
   }
 
 }

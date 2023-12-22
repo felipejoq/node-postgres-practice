@@ -1,22 +1,22 @@
 import { regexs } from "../../../config/helpers/regexs.js";
-import { Encoder } from "../../../config/plugins/encoder.js";
 
 export class CreateUserDto {
   constructor(args) {
-    const { username, email, password } = args;
-    this.username = username;
+    const { name, email, password, active, roles } = args;
+    this.name = name;
     this.email = email;
     this.password = password;
+    this.roles = roles;
   }
 
   static create(body) {
 
-    const { username, email, password } = body;
+    let { name, email, password, roles, active } = body;
 
-    if (!username || !email || !password)
-      return ['Todos los campos son obligatorios', null]
+    if (!name || !email || !password)
+      return ['Todos los campos son obligatorios', null];
 
-    if (username.trim().length <= 2)
+    if (name.trim().length <= 2)
       return ['El nombre debe ser mayor a 2 caracteres', null];
 
     if (email.trim().length <= 2)
@@ -28,7 +28,12 @@ export class CreateUserDto {
     if (password.trim().length <= 5)
       return ['El password es demasiado corto', null];
 
-    return [null, new CreateUserDto({ username, email, password })];
+
+    // Default values
+    roles = !roles ? [3] : roles;
+    active = !active ? active = true : !!active;
+
+    return [null, new CreateUserDto({ name, email, password, active, roles })];
 
   }
 }

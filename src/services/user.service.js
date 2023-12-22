@@ -3,12 +3,10 @@ import { Encoder } from "../config/plugins/encoder.js";
 import { query } from "../database/db.js";
 import {
   CREATE_USER,
-  GET_ROL_BY_ID,
   GET_TOTAL_USERS,
   GET_USERS_AND_ROLES_PAGINATE,
   GET_USER_BY_EMAIL,
   GET_USER_BY_ID_WITH_ROLES,
-  SET_ROL_TO_USER
 } from "../database/queries/users.query.js";
 import { User } from "../domain/models/User.js"
 
@@ -52,6 +50,8 @@ export class UserService {
 
   async saveUser(userDto) {
 
+    await this.roleService.checkRoles(userDto.roles);
+
     const { rows: exists } = await query(GET_USER_BY_EMAIL, [userDto.email]);
 
     if (exists.length >= 1)
@@ -62,12 +62,6 @@ export class UserService {
     const newUser = new User(userDto);
 
     const { name, email, password, roles } = newUser;
-
-    try {
-      await this.roleService.checkRoles(roles);
-    } catch (error) {
-      throw error;
-    }
 
     const { rows: [user] } = await query(CREATE_USER, [name, email, password]);
 
@@ -84,7 +78,7 @@ export class UserService {
     throw new Error('Method userservice.updateUser not implemented')
   }
 
-  async deleteUserById(id){
+  async deleteUserById(id) {
 
   }
 

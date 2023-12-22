@@ -32,7 +32,7 @@ export class RoleService {
     });
 
     if (!isContained)
-      throw CustomError.badRequest(`Incluye roles no permitidos. Permitidos [${rolesid}]`);
+      throw CustomError.badRequest(`Roles permitidos: [${rolesid}]`);
 
   }
 

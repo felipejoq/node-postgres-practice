@@ -7,7 +7,7 @@ import {
   GET_USERS_AND_ROLES_PAGINATE,
   GET_USER_BY_EMAIL
 } from "../database/queries/users.query.js";
-import { User } from "../models/User.js"
+import { User } from "../domain/models/User.js"
 
 export class UserService {
   constructor() { }

@@ -1,6 +1,6 @@
 import { handleError } from "../../config/errors/hendler.errors.js";
-import { PaginationDto } from "../../models/dtos/shared/pagination.dto.js";
-import { CreateUserDto } from "../../models/dtos/users/create-user.dto.js";
+import { PaginationDto } from "../../domain/dtos/shared/pagination.dto.js";
+import { CreateUserDto } from "../../domain/dtos/users/create-user.dto.js";
 import { UserService } from "../../services/user.service.js";
 
 export class UsersController {

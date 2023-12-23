@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS
     id BIGINT GENERATED ALWAYS AS IDENTITY (START WITH 1) PRIMARY KEY
     name VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
+    image VARCHAR DEFAULT 'https://blog.uncodigo.com/wp-content/uploads/2023/12/profile.png' NOT NULL,
     active BOOLEAN DEFAULT true NOT NULL,
     password VARCHAR NOT NULL
   );

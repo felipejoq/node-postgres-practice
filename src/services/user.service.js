@@ -91,10 +91,13 @@ export class UserService {
   async loginUser(email, password) {
 
     const user = await this.getUserByEmail(email);
-      if (!user) throw CustomError.badRequest('Email or Password are not valid');
+    if (!user) throw CustomError.badRequest('Email or Password are not valid');
+
+    if (!user.active)
+      throw CustomError.forbidden('Usuario inactivo.');
 
     const isMatching = await Encoder.compareHash(password, user.password)
-      if (!isMatching) throw CustomError.badRequest('Email or Password are not valid');
+    if (!isMatching) throw CustomError.badRequest('Email or Password are not valid');
 
     delete user.password;
 

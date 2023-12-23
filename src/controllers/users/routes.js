@@ -17,7 +17,6 @@ export class UserRoutes {
 
     productRouter.post('/', userControler.createUser);
     productRouter.put('/:id', userControler.updateUserById);
-    productRouter.put('/:id/toggle', userControler.toggleUserById);
     productRouter.delete('/:id', userControler.deleteUserById);
 
     return productRouter;

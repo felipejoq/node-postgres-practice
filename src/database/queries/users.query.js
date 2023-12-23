@@ -50,3 +50,11 @@ export const CREATE_USER = `INSERT INTO
 export const SET_ROL_TO_USER = `INSERT INTO users_roles (user_id, role_id)
                                 VALUES ($1, $2) RETURNING *`;
 
+export const UPDATE_USER_BY_ID = `UPDATE users
+                                  SET name = $1, email = $2, active = $3
+                                  WHERE id = $4 RETURNING *`;
+
+export const DELETE_USER_BY_ID = `DELETE FROM users WHERE id = $1 RETURNING *`;
+
+export const DELETE_USERS_ROLES_BY_USER_ID = `DELETE FROM users_roles WHERE user_id = $1`;
+

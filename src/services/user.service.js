@@ -3,10 +3,12 @@ import { Encoder } from "../config/plugins/encoder.js";
 import { query } from "../database/db.js";
 import {
   CREATE_USER,
+  DELETE_USER_BY_ID,
   GET_TOTAL_USERS,
   GET_USERS_AND_ROLES_PAGINATE,
   GET_USER_BY_EMAIL,
   GET_USER_BY_ID_WITH_ROLES,
+  UPDATE_USER_BY_ID,
 } from "../database/queries/users.query.js";
 import { User } from "../domain/models/User.js"
 
@@ -39,6 +41,7 @@ export class UserService {
   }
 
   async getUserById(id) {
+
     const result = await query(GET_USER_BY_ID_WITH_ROLES, [id]);
     const user = result.rows[0];
 
@@ -85,15 +88,32 @@ export class UserService {
   }
 
   async updateUserById(userDto) {
-    throw new Error('Method userservice.updateUser not implemented')
-  }
+    // Verificar que el usuario exista.
+    await this.roleService.checkAllowedRoles(userDto.roles);
+    const user = await this.getUserById(userDto.id);
 
-  async toggleUserById(id) {
-    throw new Error('Method userservice.toggleUserById not implemented')
+    // Asignarle las nuevas propiedades
+    // const updatedUser = Object.assign({}, user, userDto);
+
+    const { rows: [userUpdated] } = await query(UPDATE_USER_BY_ID, [userDto.name, userDto.email, userDto.active, user.id]);
+    const rolesUpdated = await this.roleService.updatedRolesUser(user.id, userDto.roles);
+
+    delete userUpdated.password;
+    userUpdated.roles = rolesUpdated;
+
+    return userUpdated;
   }
 
   async deleteUserById(id) {
-    throw new Error('Method userservice.deleteUserById not implemented')
+
+    await this.getUserById(id);
+
+    const {rows: [userDeleted]} = await query(DELETE_USER_BY_ID, [id]);
+
+    delete userDeleted.password
+
+    // Retornar el usuario eliminado
+    return userDeleted;
   }
 
 }

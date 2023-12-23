@@ -1,6 +1,7 @@
 import { CustomError } from "../config/errors/custom.errors.js";
 import { query } from "../database/db.js";
 import {
+  DELETE_USERS_ROLES_BY_USER_ID,
   GET_ALL_ROLES_ID,
   GET_ROL_BY_ID,
   SET_ROL_TO_USER
@@ -21,6 +22,14 @@ export class RoleService {
     }));
 
     return rolesAsigned.map(result => result.rows[0]);
+
+  }
+
+  async updatedRolesUser(userId, newRoles) {
+
+    await query(DELETE_USERS_ROLES_BY_USER_ID, [userId]);
+
+    return await this.setRoleUser(userId, newRoles);
 
   }
 

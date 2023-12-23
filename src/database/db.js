@@ -1,43 +1,53 @@
-import pg from 'pg'
+import pg from 'pg';
+import { envs } from '../config/plugins/envs.js';
+const { Pool } = pg;
 
-export const queryTask = async () => {
+const pool = new Pool({
+  connectionString: envs.POSTGRES_URL,
+  max: 10,
+  idleTimeoutMillis: 10000,
+});
 
-}
+export const query = async (query, params) => {
+  let client;
 
-export const query = async (text, params, callback) => {
-  // const pool = new pg.Pool()
-  // return pool.query(text, params, callback)
-
-  const client = new pg.Pool()
-  await client.connect();
   try {
-    client.query('BEGIN')
-    const res = client.query(text, params, callback);
+    client = await pool.connect();
+    await client.query('BEGIN')
+    const result = await client.query(query, params);
     await client.query('COMMIT')
-    return res;
+    return result;
   } catch (error) {
-    await client.query('ROLLBACK')
-    throw error
+    await client.query('ROLLBACK');
+    console.error(error);
+    throw error;
   } finally {
-    client.end();
+    if (client) {
+      client.release();
+    }
   }
+};
 
-}
+export const multyQuery = async (statements = {}) => {
+  let client;
 
-// export const query = async (text, params, callback) => {
-//   const client = new pg.Client();
-//   await client.connect();
-//   try {
-//     client.query('BEGING')
-//     const res = client.query(text, params, callback);
-//     await client.end();
-//     await client.query('COMMIT')
-//     return res;
-//   } catch (error) {
-//     await client.query('ROLLBACK')
-//     throw error
-//   } finally {
-//     client.release()
-//   }
+  const { queries, params } = statements;
 
-// }
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN')
+    const results = await Promise.all(queries.map((query, index) => {
+      return client.query(query, params[index].map(param => param));
+    }))
+    await client.query('COMMIT')
+    return results;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error(error);
+    throw error;
+  } finally {
+    if (client) {
+      client.release();
+    }
+  }
+};

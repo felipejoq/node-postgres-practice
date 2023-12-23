@@ -14,7 +14,7 @@ const main = async () => {
     routes: AppRouter.routes
   });
 
-  server.start()
+  server.start();
 }
 
 // Inicialización.

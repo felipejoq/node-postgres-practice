@@ -11,7 +11,8 @@ export class CreateUserDto {
 
   static create(body) {
 
-    let { name, email, password, roles, active } = body;
+    const roles = [3];
+    let { name, email, password, active } = body;
 
     if (!name || !email || !password)
       return ['Todos los campos son obligatorios', null];
@@ -28,9 +29,7 @@ export class CreateUserDto {
     if (password.trim().length <= 5)
       return ['El password es demasiado corto', null];
 
-
     // Default values
-    roles = !roles ? [3] : roles;
     active = !active ? active = true : !!active;
 
     return [null, new CreateUserDto({ name, email, password, active, roles })];

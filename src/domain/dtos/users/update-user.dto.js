@@ -15,9 +15,9 @@ export class UpdateUserDto {
     if (isNaN(+id))
       return [`El parámetro ${id} no es válido`, null];
 
-    let { name, email, roles, active } = body;
+    let { name, email, active } = body;
 
-    if (!name || !email || !roles)
+    if (!name || !email )
       return ['Todos los campos son obligatorios', null];
 
     if (name.trim().length <= 2)
@@ -30,7 +30,7 @@ export class UpdateUserDto {
       return ['No es un email válido', null];
 
     // Default values
-    roles = !roles ? [3] : roles;
+    const roles = [3];
     active = (typeof active === 'undefined') ? active = true : !!active;
 
     const args = { id: +id, name, email, active, roles }

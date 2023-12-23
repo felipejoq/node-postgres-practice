@@ -2,7 +2,7 @@ import express from 'express'
 
 export class Server {
 
-  constructor({ app, port, routes, publicPath = 'public' }) {
+  constructor({ app, port, routes, publicPath = 'public', serverListener }) {
     this.app = app;
     this.port = port;
     this.routes = routes;
@@ -27,10 +27,14 @@ export class Server {
       res.sendFile(indexPath);
     });
 
-    this.app.listen(this.port, () => {
+    this.serverListener = this.app.listen(this.port, () => {
       console.log(`🚀 Server running on port ${this.port}`);
     });
 
+  }
+
+  close() {
+    this.serverListener?.close();
   }
 
 }

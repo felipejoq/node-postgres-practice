@@ -1,6 +1,9 @@
 import { handleError } from "../../config/errors/hendler.errors.js";
-import { PaginationDto } from "../../domain/dtos/shared/pagination.dto.js";
-import { CreateUserDto } from "../../domain/dtos/users/create-user.dto.js";
+import {
+  PaginationDto,
+  CreateUserDto,
+  UpdateUserDto
+} from "../../domain/dtos/index.js";
 
 export class UsersController {
 
@@ -27,43 +30,88 @@ export class UsersController {
     const { id } = req.params;
 
     if (isNaN(+id))
-      return res.status(400).json({ error: `El parámetro ${id} no es un número válido.` });
+      return res.status(400).json({ error: 'El id no es válido' });
 
     this.userService.getUserById(id)
       .then(user => res.json(user))
       .catch(e => handleError(e, res));
   }
 
-  createUser = (req, res) => {
+  registerUser = (req, res) => {
 
     const body = req.body;
     const [error, newUserDto] = CreateUserDto.create(body);
 
     if (error) return res.status(400).json({ error });
 
-    this.userService.saveUser(newUserDto)
+    this.userService.registerUser(newUserDto)
       .then(newUser => res.json(newUser))
-      .catch(e => handleError(e, res))
+      .catch(e => handleError(e, res));
 
   }
 
-  updateUserById = async (req, res) => {
+  loginUser = (req, res) => {
+    const { email, password } = req.body;
+
+    // if (error) return res.status(400).json({ error });
+
+    this.userService.loginUser(email, password)
+      .then(userLogin => res.json(userLogin))
+      .catch(e => handleError(e, res));
+
+  }
+
+  updateUserById = (req, res) => {
     const { id } = req.params;
     const body = req.body;
 
-    console.log('updateUserById', { id }, { body });
-    res.json({
-      ok: true
-    })
+    const [error, userUpdatedDto] = UpdateUserDto.create({ id, body });
+
+    if (error) return res.status(400).json({ error });
+
+    this.userService.updateUserById(userUpdatedDto)
+      .then(userUpdated => res.json(userUpdated))
+      .catch(e => handleError(e, res));
+
   }
 
-  deleteUserById = async (req, res) => {
+  updateStatusUser = (req, res) => {
     const { id } = req.params;
 
-    console.log('deleteUserById', { id });
-    res.json({
-      ok: true
-    })
+    if (isNaN(+id))
+      return res.status(400).json({ error: 'El id no es válido' });
+
+    this.userService.updateStatusUser(id)
+      .then(userUpdated => res.json(userUpdated))
+      .catch(e => handleError(e, res));
+  }
+
+  updateRolesUser = (req, res) => {
+
+    const { id } = req.params;
+    const { roles, user } = req.body;
+
+    if (isNaN(+id))
+      return res.status(400).json({ error: 'El id no es válido' });
+
+    if (!roles || !Array.isArray(roles))
+      return res.status(400).json({ error: 'No agregó los roles' });
+
+    this.userService.updateRolesUser(+id, roles, user)
+      .then(userUpdated => res.json(userUpdated))
+      .catch(e => handleError(e, res));
+
+  }
+
+  deleteUserById = (req, res) => {
+    const { id } = req.params;
+
+    if (isNaN(+id))
+      return res.status(400).json({ error: 'El id no es válido' });
+
+    this.userService.deleteUserById(id)
+      .then(userDeleted => res.json(userDeleted))
+      .catch(e => handleError(e, res));
   }
 
 }

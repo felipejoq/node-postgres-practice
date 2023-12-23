@@ -1,20 +1,22 @@
 import { CustomError } from "../config/errors/custom.errors.js";
+import { JwtAdapter } from "../config/plugins/Jwt.js";
 import { Encoder } from "../config/plugins/encoder.js";
 import { query } from "../database/db.js";
 import {
   CREATE_USER,
-  GET_ROL_BY_ID,
+  DELETE_USER_BY_ID,
   GET_TOTAL_USERS,
   GET_USERS_AND_ROLES_PAGINATE,
-  GET_USER_BY_EMAIL,
+  GET_USER_BY_EMAIL_WITH_ROLES,
   GET_USER_BY_ID_WITH_ROLES,
-  SET_ROL_TO_USER
+  UPDATE_USER_BY_ID,
 } from "../database/queries/users.query.js";
 import { User } from "../domain/models/User.js"
+import { RoleService } from "./role.service.js";
 
 export class UserService {
-  constructor(roleService) {
-    this.roleService = roleService;
+  constructor() {
+    this.roleService = new RoleService();
   }
 
   async getUsers({ page, limit }) {
@@ -41,20 +43,32 @@ export class UserService {
   }
 
   async getUserById(id) {
-    const result = await query(GET_USER_BY_ID_WITH_ROLES, [id]);
-    const user = result.rows[0];
+
+    const { rows: [user] } = await query(GET_USER_BY_ID_WITH_ROLES, [id]);
 
     if (!user)
-      throw CustomError.notFound('El usuario no existe o la id es inválida.');
+      throw CustomError.notFound('El usuario no existe o la id es inválida');
 
     return user;
   }
 
-  async saveUser(userDto) {
+  async getUserByEmail(email) {
+    const result = await query(GET_USER_BY_EMAIL_WITH_ROLES, [email]);
+    const user = result.rows[0];
 
-    const { rows: exists } = await query(GET_USER_BY_EMAIL, [userDto.email]);
+    if (!user)
+      throw CustomError.notFound('El usuario no existe o el email no es válido');
 
-    if (exists.length >= 1)
+    return user;
+  }
+
+  async registerUser(userDto) {
+
+    await this.roleService.checkAllowedRoles(userDto.roles);
+
+    const { rows: exists } = await query(GET_USER_BY_EMAIL_WITH_ROLES, [userDto.email]);
+
+    if (exists.length > 0)
       throw CustomError.badRequest('Usuario ya existe');
 
     userDto.password = await Encoder.getHash(userDto.password)
@@ -63,15 +77,9 @@ export class UserService {
 
     const { name, email, password, roles } = newUser;
 
-    try {
-      await this.roleService.checkRoles(roles);
-    } catch (error) {
-      throw error;
-    }
-
     const { rows: [user] } = await query(CREATE_USER, [name, email, password]);
 
-    const rolesUser = await this.roleService.setRoleToUser(user.id, roles);
+    const rolesUser = await this.roleService.setRoleUser(user.id, roles[0]);
 
     delete user.password;
     user.roles = rolesUser;
@@ -80,12 +88,91 @@ export class UserService {
 
   }
 
-  async updateUserById(userDto) {
-    throw new Error('Method userservice.updateUser not implemented')
+  async loginUser(email, password) {
+
+    const user = await this.getUserByEmail(email);
+      if (!user) throw CustomError.badRequest('Email or Password are not valid');
+
+    const isMatching = await Encoder.compareHash(password, user.password)
+      if (!isMatching) throw CustomError.badRequest('Email or Password are not valid');
+
+    delete user.password;
+
+    const token = await JwtAdapter.generateToken({ id: user.id });
+    if (!token) throw CustomError.internalServer('Error while creating JWT');
+
+    return {
+      user,
+      token: token,
+    }
+
   }
 
-  async deleteUserById(id){
+  async updateUserById(userDto) {
 
+    await this.roleService.checkAllowedRoles(userDto.roles);
+    const user = await this.getUserById(userDto.id);
+
+    const { rows: [userUpdated] } = await query(UPDATE_USER_BY_ID, [userDto.name, userDto.email, userDto.active, user.id]);
+    // Solo administrador puede cambiar roles
+    // const rolesUpdated = await this.roleService.updatedRolesUser(user.id, userDto.roles)
+    // userUpdated.roles = rolesUpdated;
+
+    delete userUpdated.password;
+
+    return userUpdated;
+  }
+
+  async updateStatusUser(id) {
+    const user = await this.getUserById(id);
+
+    if (user.roles.some(({ role }) => role === 'ADMIN'))
+      throw CustomError.badRequest('El usuario es ADMIN');
+
+    if (!user)
+      throw CustomError.badRequest('El usuario no existe');
+
+    const isUpdate = await this.roleService.updateStatusUser(user);
+
+    if (isUpdate) return await this.getUserById(id);
+
+    throw CustomError.internalServer('Error al actualizar el usuario');
+
+  }
+
+  async updateRolesUser(userId, roles, userAction) {
+
+    await this.roleService.checkAllowedRoles(roles);
+
+    const user = await this.getUserById(userId);
+
+    // Comprobar si el usuario que se quiere actualizar es Admin
+    const isAdmin = user.roles.some(({ role }) => role === 'ADMIN');
+    const isUpdatingItSelf = user.id === userAction.id;
+
+    console.log({ userId, roles, userAction, isAdmin, isUpdatingItSelf });
+
+    if (isAdmin && isUpdatingItSelf) {
+      console.log('Es ADMIN y se está actualizado a si mismo');
+      if (!roles.some(id => id === 1)) {
+        throw CustomError.badRequest('Un administrador no puede eliminar su rol de administrador');
+      }
+    }
+
+    await this.roleService.updatedRolesUser(userId, roles);
+
+    return await this.getUserById(userId);
+  }
+
+  async deleteUserById(id) {
+
+    await this.getUserById(id);
+
+    const { rows: [userDeleted] } = await query(DELETE_USER_BY_ID, [id]);
+
+    delete userDeleted.password
+
+    return userDeleted;
   }
 
 }

@@ -1,20 +1,23 @@
 import { regexs } from "../../../config/helpers/regexs.js";
 
-export class CreateUserDto {
+export class UpdateUserDto {
   constructor(args) {
-    const { name, email, password, active, roles } = args;
+    const { id, name, email, active, roles } = args;
+    this.id = id
     this.name = name;
     this.email = email;
-    this.password = password;
+    this.active = active;
     this.roles = roles;
   }
 
-  static create(body) {
+  static create({ id, body }) {
 
-    const roles = [3];
-    let { name, email, password, active } = body;
+    if (isNaN(+id))
+      return [`El parámetro ${id} no es válido`, null];
 
-    if (!name || !email || !password)
+    let { name, email, active } = body;
+
+    if (!name || !email )
       return ['Todos los campos son obligatorios', null];
 
     if (name.trim().length <= 2)
@@ -26,13 +29,13 @@ export class CreateUserDto {
     if (regexs.email.test())
       return ['No es un email válido', null];
 
-    if (password.trim().length <= 5)
-      return ['El password es demasiado corto', null];
-
     // Default values
-    active = !active ? active = true : !!active;
+    const roles = [3];
+    active = (typeof active === 'undefined') ? active = true : !!active;
 
-    return [null, new CreateUserDto({ name, email, password, active, roles })];
+    const args = { id: +id, name, email, active, roles }
+
+    return [null, new UpdateUserDto(args)];
 
   }
 }

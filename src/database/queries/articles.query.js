@@ -4,21 +4,22 @@ SELECT
   a.title,
   a.excerpt,
   a.body,
+  a.slug,
   a.price,
   a.active,
   a.create_at,
   a.updated_at,
   u.name AS user_name,
   u.email,
-  u.image,
-  json_agg(json_build_object('id', i.id, 'url_img', i.url_img)) AS images
+  u.image AS user_profile_img,
+  json_agg(json_build_object('id', i.id, 'url_img', i.url_img)) AS article_images
 FROM articles a
 INNER JOIN users u
 ON a.user_id = u.id
 LEFT JOIN images_article i
 ON a.id = i.article_id
 WHERE a.active = true AND u.id = $1
-GROUP BY a.id, a.title, a.excerpt, a.body, a.price, a.active, a.create_at, a.updated_at, u.name, u.email, u.image
+GROUP BY a.id, a.title, a.excerpt, a.body, a.slug, a.price, a.active, a.create_at, a.updated_at, u.name, u.email, u.image
 LIMIT $2
 OFFSET $3
 `;
@@ -29,6 +30,7 @@ SELECT
   a.title,
   a.excerpt,
   a.body,
+  a.slug,
   a.price,
   a.active,
   a.create_at,
@@ -43,5 +45,29 @@ ON a.user_id = u.id
 LEFT JOIN images_article i
 ON a.id = i.article_id
 WHERE a.active = true AND a.id = $1
-GROUP BY a.id, a.title, a.excerpt, a.body, a.price, a.active, a.create_at, a.updated_at, u.name, u.email, u.image
+GROUP BY a.id, a.title, a.excerpt, a.body, a.slug, a.price, a.active, a.create_at, a.updated_at, u.name, u.email, u.image
+`;
+
+export const GET_ARTICLE_BY_SLUG = `
+SELECT
+  a.id,
+  a.title,
+  a.excerpt,
+  a.body,
+  a.slug,
+  a.price,
+  a.active,
+  a.create_at,
+  a.updated_at,
+  u.name AS user_name,
+  u.email,
+  u.image AS user_profile_img,
+  json_agg(json_build_object('id', i.id, 'url_img', i.url_img)) AS article_images
+FROM articles a
+INNER JOIN users u
+ON a.user_id = u.id
+LEFT JOIN images_article i
+ON a.id = i.article_id
+WHERE a.active = true AND a.slug = $1
+GROUP BY a.id, a.title, a.excerpt, a.body, a.slug, a.price, a.active, a.create_at, a.updated_at, u.name, u.email, u.image
 `;

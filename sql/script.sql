@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS
     title VARCHAR NOT NULL,
     excerpt VARCHAR NOT NULL,
     body TEXT NOT NULL,
+    price DECIMAL(10,2),
     active BOOLEAN DEFAULT true NOT NULL,
     create_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
     updated_at TIMESTAMP DEFAULT current_timestamp NOT NULL,

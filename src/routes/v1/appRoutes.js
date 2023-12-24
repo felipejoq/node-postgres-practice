@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ProductRoutes } from "../../controllers/products/routes.js";
+import { ProductRoutes } from "../../controllers/articles/routes.js";
 import { UserRoutes } from "../../controllers/users/routes.js";
 
 export class AppRouter {

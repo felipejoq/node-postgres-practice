@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS
   users (
     id BIGINT GENERATED ALWAYS AS IDENTITY (START WITH 1) PRIMARY KEY,
     name VARCHAR NOT NULL,
-    email VARCHAR NOT NULL,
+    email VARCHAR UNIQUE NOT NULL,
     image VARCHAR DEFAULT 'https://blog.uncodigo.com/wp-content/uploads/2023/12/profile.png' NOT NULL,
     active BOOLEAN DEFAULT true NOT NULL,
     password VARCHAR NOT NULL
@@ -93,7 +93,6 @@ VALUES
   (6, 3),
   (7, 3);
 
-
 INSERT INTO articles (title, excerpt, body, price, user_id, create_at, updated_at, active)
 VALUES (
   'Lindo vestido de verano',
@@ -139,7 +138,7 @@ VALUES (
   7,
   '2023-12-24 12:37:00',
   '2023-12-24 12:37:00',
-  true
+  false
 ),(
   'Libro de cocina vegana',
   'Aprende a cocinar deliciosas comidas veganas con este libro de cocina. Contiene recetas para todos los gustos.',
@@ -193,5 +192,29 @@ VALUES (
   7,
   '2023-12-24 12:37:00',
   '2023-12-24 12:37:00',
-  true
+  false
 );
+
+INSERT INTO
+  images_article (article_id, user_id )
+VALUES
+  (1, 1),
+  (1, 1),
+  (2, 2),
+  (2, 2),
+  (2, 2),
+  (3, 3),
+  (4, 7),
+  (4, 7),
+  (4, 7),
+  (4, 7),
+  (5, 7),
+  (6, 1),
+  (7, 1),
+  (8, 2),
+  (8, 2),
+  (8, 2),
+  (8, 2),
+  (9, 3),
+  (10, 7),
+  (11, 7);

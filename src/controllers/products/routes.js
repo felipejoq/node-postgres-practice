@@ -1,20 +1,20 @@
 import { Router } from "express";
-import { ProductController } from './controller.js';
+import { ArticleController } from './controller.js';
 
 export class ProductRoutes {
 
   static get routes() {
 
-    const productRouter = Router();
+    const articleRouter = Router();
 
-    productRouter.get('/', ProductController.getProducts);
-    productRouter.get('/:id', ProductController.getProductById);
+    articleRouter.get('/', ArticleController.getArticles);
+    articleRouter.get('/:id', ArticleController.getArticleById);
 
-    productRouter.post('/', ProductController.createProduct);
-    productRouter.put('/:id', ProductController.updateProductById);
-    productRouter.delete('/:id', ProductController.deleteProductById);
+    articleRouter.post('/', ArticleController.createArticle);
+    articleRouter.put('/:id', ArticleController.updateArticleById);
+    articleRouter.delete('/:id', ArticleController.deleteArticleById);
 
-    return productRouter;
+    return articleRouter;
   }
 
 }

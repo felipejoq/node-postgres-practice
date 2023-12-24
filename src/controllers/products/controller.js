@@ -1,43 +1,43 @@
-export class ProductController {
+export class ArticleController {
   constructor() { }
 
-  static getProducts = async (req, res) => {
-    console.log('getProducts');
+  static getArticles = async (req, res) => {
+    console.log('getArticles');
     res.json({
       ok: true
     })
   }
 
-  static getProductById = async (req, res) => {
+  static getArticleById = async (req, res) => {
     const { id } = req.params;
-    console.log('getProductById', { id });
+    console.log('getArticleById', { id });
     res.json({
       ok: true
     })
   }
 
-  static createProduct = async (req, res) => {
+  static createArticle = async (req, res) => {
     const body = req.body;
-    console.log('createProduct', { body });
+    console.log('createArticle', { body });
     res.json({
       ok: true
     })
   }
 
-  static updateProductById = async (req, res) => {
+  static updateArticleById = async (req, res) => {
     const { id } = req.params;
     const body = req.body;
 
-    console.log('updateProductById', { id }, { body });
+    console.log('updateArticleById', { id }, { body });
     res.json({
       ok: true
     })
   }
 
-  static deleteProductById = async (req, res) => {
+  static deleteArticleById = async (req, res) => {
     const { id } = req.params;
 
-    console.log('deleteProductById', { id });
+    console.log('deleteArticleById', { id });
     res.json({
       ok: true
     })

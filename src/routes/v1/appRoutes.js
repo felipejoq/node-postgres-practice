@@ -10,7 +10,7 @@ export class AppRouter {
     const AppRouter = Router();
 
     AppRouter.use('/api/v1/user', UserRoutes.routes);
-    AppRouter.use('/api/v1/product', ProductRoutes.routes);
+    AppRouter.use('/api/v1/article', ProductRoutes.routes);
 
     return AppRouter;
   }

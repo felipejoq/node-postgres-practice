@@ -117,9 +117,6 @@ export class UserService {
     const user = await this.getUserById(userDto.id);
 
     const { rows: [userUpdated] } = await query(UPDATE_USER_BY_ID, [userDto.name, userDto.email, userDto.active, user.id]);
-    // Solo administrador puede cambiar roles
-    // const rolesUpdated = await this.roleService.updatedRolesUser(user.id, userDto.roles)
-    // userUpdated.roles = rolesUpdated;
 
     delete userUpdated.password;
 

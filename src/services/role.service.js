@@ -60,7 +60,7 @@ export class RoleService {
     const { rows: [{ rolesid }] } = await query(GET_ALL_ROLES_ID);
 
     const isContained = roles.every((role) => {
-      return rolesid.includes(role);
+      return rolesid.includes(role.toString());
     });
 
     if (!isContained)

@@ -1,4 +1,8 @@
-import express from 'express'
+import path from 'node:path';
+import express from 'express';
+import { URL } from 'url';
+
+const __dirname = new URL('.', import.meta.url).pathname;
 
 export class Server {
 
@@ -24,7 +28,7 @@ export class Server {
 
     //* SPA
     this.app.get('*', (req, res) => {
-      const indexPath = path.join(__dirname + `../../../${this.publicPath}/index.html`);
+      const indexPath = path.join(__dirname + `../${this.publicPath}/index.html`);
       res.sendFile(indexPath);
     });
 

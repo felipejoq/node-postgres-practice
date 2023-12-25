@@ -1,22 +1,57 @@
+import { handleError } from "../../config/errors/hendler.errors.js";
+import { PaginationDto } from "../../domain/dtos/index.js";
+
 export class ArticleController {
-  constructor() { }
-
-  static getArticles = async (req, res) => {
-    console.log('getArticles');
-    res.json({
-      ok: true
-    })
+  constructor(articleService) {
+    this.articleService = articleService;
   }
 
-  static getArticleById = async (req, res) => {
+  getArticles = async (req, res) => {
+    const { page, limit } = req.query;
+    const [error, pagination] = PaginationDto.create({
+      page, limit
+    });
+
+    if (error) return res.status(400).json({ error });
+
+    this.articleService.getArticles(pagination)
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+  getAllArticles = async (req, res) => {
+    const { page, limit } = req.query;
+    const [error, pagination] = PaginationDto.create({
+      page, limit
+    });
+
+    if (error) return res.status(400).json({ error });
+
+    this.articleService.getAllArticles(pagination)
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+  getArticleById = async (req, res) => {
     const { id } = req.params;
-    console.log('getArticleById', { id });
-    res.json({
-      ok: true
-    })
+
+    if (isNaN(+id))
+      return res.status(400).json({ error: 'El id no es válido' });
+
+    this.articleService.getArticleById(+id)
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
   }
 
-  static createArticle = async (req, res) => {
+  getArticleBySlug = async (req, res) => {
+    const { slug } = req.params;
+
+    this.articleService.getArticleBySlug(slug)
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+  createArticle = async (req, res) => {
     const body = req.body;
     console.log('createArticle', { body });
     res.json({
@@ -24,7 +59,7 @@ export class ArticleController {
     })
   }
 
-  static updateArticleById = async (req, res) => {
+  updateArticleById = async (req, res) => {
     const { id } = req.params;
     const body = req.body;
 
@@ -34,7 +69,7 @@ export class ArticleController {
     })
   }
 
-  static deleteArticleById = async (req, res) => {
+  deleteArticleById = async (req, res) => {
     const { id } = req.params;
 
     console.log('deleteArticleById', { id });

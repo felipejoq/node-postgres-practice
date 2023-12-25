@@ -54,8 +54,8 @@ CREATE TABLE IF NOT EXISTS
     url_img VARCHAR DEFAULT 'https://blog.uncodigo.com/wp-content/uploads/2023/12/no-img.jpg' NOT NULL,
     article_id BIGINT,
     user_id BIGINT,
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
-    CONSTRAINT fk_article_id FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE SET NULL
+    -- CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
+    CONSTRAINT fk_article_id FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE
   );
 
 INSERT INTO
@@ -208,25 +208,25 @@ VALUES (
 );
 
 INSERT INTO
-  images_article (article_id, user_id )
+  images_article (article_id)
 VALUES
-  (1, 1),
-  (1, 1),
-  (2, 2),
-  (2, 2),
-  (2, 2),
-  (3, 3),
-  (4, 7),
-  (4, 7),
-  (4, 7),
-  (4, 7),
-  (5, 7),
-  (6, 1),
-  (7, 1),
-  (8, 2),
-  (8, 2),
-  (8, 2),
-  (8, 2),
-  (9, 3),
-  (10, 7),
-  (11, 7);
+  (1),
+  (1),
+  (2),
+  (2),
+  (2),
+  (3),
+  (4),
+  (4),
+  (4),
+  (4),
+  (5),
+  (6),
+  (7),
+  (8),
+  (8),
+  (8),
+  (8),
+  (9),
+  (10),
+  (11);

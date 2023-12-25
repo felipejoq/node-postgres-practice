@@ -28,4 +28,29 @@ export class RoleMiddleware {
 
   }
 
+  static validRolesArticles(rolesIdAllowed = []) {
+    return (req, res, next) => {
+
+      try {
+        const { roles} = req.body.user;
+
+        if (!Array.isArray(roles) || roles.some(({ role }) => typeof role !== 'string')) {
+          throw new Error('Roles inválidos en req.body.user');
+        }
+
+        const hasAllowedRole = roles.some(({ role }) => rolesIdAllowed.includes(role));
+
+        if (hasAllowedRole) {
+          return next();
+        } else {
+          return res.status(401).json({ error: 'No autorizado' });
+        }
+      } catch (error) {
+        console.error(error);
+        return res.status(400).json({ error: 'Error en la validación de roles' });
+      }
+
+    }
+  }
+
 }

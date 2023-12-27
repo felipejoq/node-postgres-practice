@@ -1,4 +1,5 @@
 import { handleError } from "../../config/errors/hendler.errors.js";
+import { CreateArticleDto } from "../../domain/dtos/articles/create-article.dto.js";
 import { PaginationDto } from "../../domain/dtos/index.js";
 
 export class ArticleController {
@@ -52,11 +53,16 @@ export class ArticleController {
   }
 
   createArticle = async (req, res) => {
+
     const body = req.body;
-    console.log('createArticle', { body });
-    res.json({
-      ok: true
-    })
+
+    const [error, articleDto] = CreateArticleDto.create(body);
+
+    if (error) return res.status(401).json({ error })
+
+    this.articleService.createArticle(articleDto)
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
   }
 
   updateArticleById = async (req, res) => {

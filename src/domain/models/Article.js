@@ -1,19 +1,27 @@
-// TODO: Definir modelo de producto
-export class Product {
+import { getUUUID } from "../../config/plugins/uuid.js";
+
+export class Article {
   constructor(args) {
 
-    const { id, title, excerpt, body, slug, price, active, created_at, updated_at, user } = args;
+    const { title, description, price, active, user, files } = args;
 
-    this.id = id;
     this.title = title;
-    this.excerpt = excerpt;
-    this.body = body;
-    this.slug = slug;
+    this.description = description;
     this.price = price;
     this.active = active;
-    this.created_at = created_at;
-    this.updated_at = updated_at;
     this.user = user;
-    
+    this.files = files;
+  }
+
+  get getSlug() {
+    return this.slug;
+  }
+
+  setSlug(str) {
+    // const randomNumber = Math.max(Date.now() * Math.floor(Math.random() * 10), 1);
+    this.slug = str.toLowerCase()
+      .split(' ')
+      .join('-')
+      .concat('-', getUUUID()); // Se puede usar getUUUID()
   }
 }

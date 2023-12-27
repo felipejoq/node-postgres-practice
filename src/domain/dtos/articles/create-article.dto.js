@@ -1,41 +1,41 @@
-export class CreateUserDto {
+export class CreateArticleDto {
   constructor(args) {
-    const { title, excerpt, body, slug, price, active, created_at, updated_at, user } = args;
+    const { title, description, slug, price, active, created_at, updated_at, user, files } = args;
     this.title = title;
-    this.excerpt = excerpt;
-    this.body = body;
+    this.description = description;
     this.slug = slug;
     this.price = price;
     this.active = active;
     this.created_at = created_at;
     this.updated_at = updated_at;
     this.user = user;
+    this.files = files;
   }
 // TODO TODO TODO TODO
   static create(body) {
 
-    const roles = [3];
-    let { name, email, password, active } = body;
+    let { title, description, price, active, user, files } = body;
 
-    if (!name || !email || !password)
+    if (!title || !description || !price || !user)
       return ['Todos los campos son obligatorios', null];
 
-    if (name.trim().length <= 2)
-      return ['El nombre debe ser mayor a 2 caracteres', null];
+    if (title.trim().length <= 10)
+      return ['El título debe ser mayor a 10 caracteres', null];
 
-    if (email.trim().length <= 2)
-      return ['El email es demasiado corto', null];
+    if (description.trim().length <= 20)
+      return ['Descripción demasiado corta.', null];
 
-    if (regexs.email.test())
-      return ['No es un email válido', null];
+    if (price < 0)
+      return ['El precio debe ser un monto mayor a cero', null];
 
-    if (password.trim().length <= 5)
-      return ['El password es demasiado corto', null];
+    if (!user) {
+      return ['No especificó un autor válido para este artículo', null];
+    }
 
     // Default values
     active = !active ? active = true : !!active;
 
-    return [null, new CreateUserDto({ name, email, password, active, roles })];
+    return [null, new CreateArticleDto({ title, description, price, active, user, files})];
 
   }
 }

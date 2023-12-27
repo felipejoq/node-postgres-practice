@@ -1,5 +1,6 @@
 import path from 'node:path';
 import express from 'express';
+import fileUpload from 'express-fileupload';
 import { URL } from 'url';
 
 const __dirname = new URL('.', import.meta.url).pathname;
@@ -11,6 +12,7 @@ export class Server {
     this.port = port;
     this.routes = routes;
     this.publicPath = publicPath;
+    this.serverListener = undefined;
   }
 
   async start() {
@@ -19,6 +21,9 @@ export class Server {
     this.app.use(express.json()); // raw
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
     this.app.disable('x-powered-by');
+    this.app.use(fileUpload({
+      limits: { fileSize: 50 * 1024 * 1024 },
+    }));
 
     //* Public Folder
     this.app.use(express.static(this.publicPath));

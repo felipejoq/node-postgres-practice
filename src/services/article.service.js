@@ -1,16 +1,20 @@
 import { CustomError } from "../config/errors/custom.errors.js";
 import { query } from "../database/db.js";
 import {
+  CREATE_ARTICLE,
   GET_ALL_ARTICLES_WHIT_PAGINATION,
   GET_ARTICLES_WHIT_PAGINATION,
   GET_ARTICLE_BY_ID,
   GET_ARTICLE_BY_SLUG,
   GET_TOTAL_ARTICLES
 } from "../database/queries/articles.query.js";
+import { Article } from "../domain/models/Article.js";
 
 export class ArticleService {
 
-  constructor() { }
+  constructor(imagesService) {
+    this.imagesService = imagesService;
+  }
 
   async getArticles({ page, limit }) {
 
@@ -80,6 +84,24 @@ export class ArticleService {
 
   }
 
+  async createArticle(articleDto) {
 
+    const newArticle = new Article(articleDto);
+    newArticle.setSlug(articleDto.title);
+
+    const { title, description, slug, price, active, user, files } = newArticle;
+
+    const { rows: [article] } = await query(CREATE_ARTICLE, [title, description, slug, price, active, user.id]);
+
+    const urlImages = await this.imagesService.uploadMultiple(files, article);
+
+    const imagesToArticle = await this.imagesService.setImagesToArticle(urlImages, article.id, user.id);
+
+    delete article.user_id;
+    article.user = user;
+    article.article_images = imagesToArticle;
+
+    return article;
+  }
 
 }

@@ -11,4 +11,10 @@ export const envs = {
   PGPASSWORD: env.get('PGPASSWORD').required().asString(),
   PGDATABASE: env.get('PGDATABASE').required().asString(),
   PGPORT: env.get('PGPORT').required().asInt(),
+  FIREBASE_api_Key: env.get('FIREBASE_api_Key').required().asString(),
+  FIREBASE_authDomain: env.get('FIREBASE_authDomain').required().asString(),
+  FIREBASE_projectId: env.get('FIREBASE_projectId').required().asString(),
+  FIREBASE_storageBucket: env.get('FIREBASE_storageBucket').required().asString(),
+  FIREBASE_messagingSenderId: env.get('FIREBASE_messagingSenderId').required().asString(),
+  FIREBASE_appId: env.get('FIREBASE_appId').required().asString(),
 }

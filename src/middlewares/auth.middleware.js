@@ -26,8 +26,6 @@ export class AuthMiddleware {
       delete user.password
       if (!user) return res.status(401).json({ error: 'Invalid token - user' });
 
-      // todo: validar si el usuario está activo
-
       req.body.user = user;
 
       return next();

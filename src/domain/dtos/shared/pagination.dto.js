@@ -7,12 +7,12 @@ export class PaginationDto {
 
   static create({ page = 1, limit = 10 }) {
 
-    if (isNaN(page) || isNaN(limit)) return ['Limit and page must be numbers'];
+    if (isNaN(+page) || isNaN(+limit)) return ['Limit and page must be numbers'];
 
     if (page <= 0) return ['Offset must be greater than 0'];
     if (limit <= 0) return ['Limit must be greater than 0']
 
-    return [undefined, new PaginationDto({ page, limit })];
+    return [undefined, new PaginationDto({ page: parseInt(page), limit: parseInt(limit) })];
   }
 
 }

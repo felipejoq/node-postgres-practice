@@ -153,7 +153,6 @@ export class UserService {
     console.log({ userId, roles, userAction, isAdmin, isUpdatingItSelf });
 
     if (isAdmin && isUpdatingItSelf) {
-      console.log('Es ADMIN y se está actualizado a si mismo');
       if (!roles.some(id => id === 1)) {
         throw CustomError.badRequest('Un administrador no puede eliminar su rol de administrador');
       }

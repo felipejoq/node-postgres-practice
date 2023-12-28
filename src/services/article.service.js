@@ -2,11 +2,13 @@ import { CustomError } from "../config/errors/custom.errors.js";
 import { query } from "../database/db.js";
 import {
   CREATE_ARTICLE,
+  DELETE_ARTICLE_BY_ID,
   GET_ALL_ARTICLES_WHIT_PAGINATION,
   GET_ARTICLES_WHIT_PAGINATION,
   GET_ARTICLE_BY_ID,
   GET_ARTICLE_BY_SLUG,
-  GET_TOTAL_ARTICLES
+  GET_TOTAL_ARTICLES,
+  UPDATE_ARTICLE_BY_ID
 } from "../database/queries/articles.query.js";
 import { Article } from "../domain/models/Article.js";
 
@@ -62,15 +64,23 @@ export class ArticleService {
 
   }
 
-  async getArticleById(id) {
+  async getArticleById({ id, user }) {
 
-    const { rows: [article] } = await query(GET_ARTICLE_BY_ID, [id]);
+    const { rows: [articleDb] } = await query(GET_ARTICLE_BY_ID, [id]);
 
-    if (!article)
+    if (!articleDb)
       throw CustomError.notFound('El artículo no existe o la id no es válida');
 
-    return article;
+    const { id: userId, roles } = user;
+    const { author: { id: authorId } } = articleDb;
 
+    const hasAllowedRole = roles.some(value => value.role === 'ADMIN' || value.role === 'SELLER');
+    const userIsOwner = +userId === +authorId;
+
+    if (!(hasAllowedRole || userIsOwner))
+      throw CustomError.notFound('No tiene permisos');
+
+    return articleDb;
   }
 
   async getArticleBySlug(slug) {
@@ -84,16 +94,16 @@ export class ArticleService {
 
   }
 
-  async createArticle(articleDto) {
+  async createArticle(createArticleDto) {
 
-    const newArticle = new Article(articleDto);
-    newArticle.setSlug(articleDto.title);
+    const newArticle = new Article(createArticleDto);
+    newArticle.setSlug(createArticleDto.title);
 
     const { title, description, slug, price, active, user, files } = newArticle;
 
     const { rows: [article] } = await query(CREATE_ARTICLE, [title, description, slug, price, active, user.id]);
 
-    const urlImages = await this.imagesService.uploadMultiple(files, article);
+    const urlImages = await this.imagesService.uploadMultiple(files);
 
     const imagesToArticle = await this.imagesService.setImagesToArticle(urlImages, article.id, user.id);
 
@@ -102,6 +112,48 @@ export class ArticleService {
     article.article_images = imagesToArticle;
 
     return article;
+  }
+
+  async updateArticleById(updateArticleDto) {
+
+    const articleDb = await this.getArticleById({ id: +updateArticleDto.id, user: updateArticleDto.user });
+
+    const { user: { id: userId, roles }, id, title, description, price, active } = updateArticleDto;
+    const { author: { id: authorId } } = articleDb;
+
+    const hasAllowedRole = roles.some(value => value.role === 'ADMIN' || value.role === 'SELLER');
+    const userIsOwner = userId === authorId;
+
+    if (!(hasAllowedRole || userIsOwner))
+      throw CustomError.notFound('No tiene permisos');
+
+    await query(UPDATE_ARTICLE_BY_ID, [title, description, price, active, id]);
+
+    const articleUpdated = await this.getArticleById({ id: +updateArticleDto.id, user: updateArticleDto.user });
+
+    return articleUpdated;
+
+  }
+
+  async deleteArticleById({ id, user }) {
+
+    const { rows: [articleDb] } = await query(GET_ARTICLE_BY_ID, [id]);
+
+    if (!articleDb)
+      throw CustomError.notFound('El artículo no existe o la id no es válida');
+
+    const { id: userId, roles } = user;
+    const { author: { id: authorId } } = articleDb;
+
+    const hasAllowedRole = roles.some(value => value.role === 'ADMIN' || value.role === 'SELLER');
+    const userIsOwner = +userId === +authorId;
+
+    if (!(hasAllowedRole || userIsOwner))
+      throw CustomError.notFound('No tiene permisos');
+
+    const { rows: [articleDeleted] } = await query(DELETE_ARTICLE_BY_ID, [id])
+
+    return articleDeleted;
   }
 
 }

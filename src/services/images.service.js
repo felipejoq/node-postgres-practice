@@ -28,6 +28,8 @@ export class ImagesService {
       const snapshot = await uploadBytes(storageRef, file.data);
       const urlImg = await getDownloadURL(storageRef);
 
+      console.log({snapshot});
+
       return urlImg;
 
     } catch (error) {
@@ -59,6 +61,10 @@ export class ImagesService {
     );
 
     return result.map(result => result.rows[0]);
+  }
+
+  async updateImagesToArticle (urlsImgs, articleId, userId){
+    
   }
 
 }

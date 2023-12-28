@@ -20,12 +20,20 @@ export class ProductRoutes {
       FileUploadMiddleware.containFiles
     ], articleControler.createArticle);
 
+    articleRouter.put('/:id', [
+      AuthMiddleware.validateJWT,
+      RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER']),
+    ], articleControler.updateArticleById);
+
+    articleRouter.get('/id/:id', [
+      AuthMiddleware.validateJWT,
+      RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER']),
+    ], articleControler.getArticleById);
+
     articleRouter.get('/all', [AuthMiddleware.validateJWT, RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER'])], articleControler.getAllArticles);
-    articleRouter.put('/:id', [AuthMiddleware.validateJWT, RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER'])], articleControler.updateArticleById);
     articleRouter.delete('/:id', [AuthMiddleware.validateJWT, RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER'])], articleControler.deleteArticleById);
 
     articleRouter.get('/', articleControler.getArticles);
-    articleRouter.get('/id/:id', articleControler.getArticleById);
     articleRouter.get('/slug/:slug', articleControler.getArticleBySlug);
 
     return articleRouter;

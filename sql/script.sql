@@ -51,8 +51,8 @@ CREATE TABLE IF NOT EXISTS
   images_article (
     id BIGINT GENERATED ALWAYS AS IDENTITY (START WITH 1) PRIMARY KEY,
     url_img VARCHAR DEFAULT 'https://blog.uncodigo.com/wp-content/uploads/2023/12/no-img.jpg' NOT NULL,
-    article_id BIGINT,
-    user_id BIGINT,
+    article_id BIGINT NOT NULL,
+    -- user_id BIGINT,
     -- CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
     CONSTRAINT fk_article_id FOREIGN KEY (article_id) REFERENCES articles (id) ON DELETE CASCADE
   );
@@ -129,7 +129,7 @@ VALUES (
   7,
   '2023-12-24 12:37:00',
   '2023-12-24 12:37:00',
-  true
+  false
 ),(
   'Juego de mesa de estrategia',
   'Este juego es perfecto para cualquier amante de los juegos de mesa. Es desafiante y te mantendrá entretenido durante horas.',

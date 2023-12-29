@@ -1,13 +1,13 @@
 import { handleError } from "../../config/errors/hendler.errors.js";
 import { CreateArticleDto } from "../../domain/dtos/articles/create-article.dto.js";
-import { PaginationDto } from "../../domain/dtos/index.js";
+import { PaginationDto, UpdateArticleDto } from "../../domain/dtos/index.js";
 
 export class ArticleController {
   constructor(articleService) {
     this.articleService = articleService;
   }
 
-  getArticles = async (req, res) => {
+  getArticles = (req, res) => {
     const { page, limit } = req.query;
     const [error, pagination] = PaginationDto.create({
       page, limit
@@ -20,7 +20,7 @@ export class ArticleController {
       .catch(e => handleError(e, res));
   }
 
-  getAllArticles = async (req, res) => {
+  getAllArticles = (req, res) => {
     const { page, limit } = req.query;
     const [error, pagination] = PaginationDto.create({
       page, limit
@@ -33,18 +33,19 @@ export class ArticleController {
       .catch(e => handleError(e, res));
   }
 
-  getArticleById = async (req, res) => {
-    const { id } = req.params;
+  getArticleById = (req, res) => {
+    const { articleId } = req.params;
+    const { user } = req.body;
 
-    if (isNaN(+id))
+    if (isNaN(+articleId))
       return res.status(400).json({ error: 'El id no es válido' });
 
-    this.articleService.getArticleById(+id)
+    this.articleService.getArticleById({ articleId, user })
       .then(data => res.json(data))
       .catch(e => handleError(e, res));
   }
 
-  getArticleBySlug = async (req, res) => {
+  getArticleBySlug = (req, res) => {
     const { slug } = req.params;
 
     this.articleService.getArticleBySlug(slug)
@@ -52,36 +53,88 @@ export class ArticleController {
       .catch(e => handleError(e, res));
   }
 
-  createArticle = async (req, res) => {
+  getArticlesByUserId = (req, res) => {
 
-    const body = req.body;
+    const { userId } = req.params;
+    const { page, limit } = req.query;
+    const [error, pagination] = PaginationDto.create({
+      page, limit
+    });
 
-    const [error, articleDto] = CreateArticleDto.create(body);
+    if (error) return res.status(400).json({ error });
 
-    if (error) return res.status(401).json({ error })
-
-    this.articleService.createArticle(articleDto)
+    this.articleService.getArticlesByUserId({ userId, page: pagination.page, limit: pagination.limit })
       .then(data => res.json(data))
       .catch(e => handleError(e, res));
   }
 
-  updateArticleById = async (req, res) => {
-    const { id } = req.params;
+  createArticle = (req, res) => {
+
     const body = req.body;
 
-    console.log('updateArticleById', { id }, { body });
-    res.json({
-      ok: true
-    })
+    const [error, createArticleDto] = CreateArticleDto.create(body);
+
+    if (error) return res.status(401).json({ error })
+
+    this.articleService.createArticle(createArticleDto)
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
   }
 
-  deleteArticleById = async (req, res) => {
-    const { id } = req.params;
+  updateArticleById = (req, res) => {
 
-    console.log('deleteArticleById', { id });
-    res.json({
-      ok: true
-    })
+    const { articleId } = req.params;
+    const body = req.body;
+
+    const [error, updateArticleDto] = UpdateArticleDto.create({ articleId, body });
+
+    if (error) return res.status(401).json({ error })
+
+    this.articleService.updateArticleById(updateArticleDto)
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+  deleteArticleById = (req, res) => {
+    const { articleId } = req.params;
+    const { user } = req.body;
+
+    if (isNaN(+articleId))
+      return res.status(400).json({ error: 'El id no es válido' });
+
+    this.articleService.deleteArticleById({ articleId, user })
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+
+  addImagesToArticle = (req, res) => {
+    const { articleId } = req.params;
+    const { user, files } = req.body;
+
+    this.articleService.addImagesToArticle({ articleId, user, files })
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+  removeImageArticle = (req, res) => {
+
+    const { articleId, imageId } = req.params;
+    const { user } = req.body;
+
+    this.articleService.removeImageArticle({ articleId, imageId, user })
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+  changeStatusArticle = (req, res) => {
+
+    const { articleId } = req.params;
+    const { user, status } = req.body;
+
+    this.articleService.changeStatusArticle({ articleId, user, status })
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
   }
 
 }

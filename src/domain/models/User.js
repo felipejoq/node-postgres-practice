@@ -1,4 +1,3 @@
-// TODO: definir modelo del user
 export class User {
   constructor({id, name, email, password, active, roles}) {
     this.id = id;

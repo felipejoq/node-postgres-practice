@@ -14,19 +14,44 @@ export class ProductRoutes {
     const articleService = new ArticleService(new ImagesService(firebaseConfig));
     const articleControler = new ArticleController(articleService);
 
+    articleRouter.get('/all', [AuthMiddleware.validateJWT, RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER'])], articleControler.getAllArticles);
+    articleRouter.delete('/:articleId', [AuthMiddleware.validateJWT, RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER'])], articleControler.deleteArticleById);
+
+    articleRouter.get('/', articleControler.getArticles);
+    articleRouter.get('/slug/:slug', articleControler.getArticleBySlug);
+    articleRouter.get('/user/:userId', articleControler.getArticlesByUserId)
+
     articleRouter.post('/', [
       AuthMiddleware.validateJWT,
       RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER']),
       FileUploadMiddleware.containFiles
     ], articleControler.createArticle);
 
-    articleRouter.get('/all', [AuthMiddleware.validateJWT, RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER'])], articleControler.getAllArticles);
-    articleRouter.put('/:id', [AuthMiddleware.validateJWT, RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER'])], articleControler.updateArticleById);
-    articleRouter.delete('/:id', [AuthMiddleware.validateJWT, RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER'])], articleControler.deleteArticleById);
+    articleRouter.put('/:articleId', [
+      AuthMiddleware.validateJWT,
+      RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER']),
+    ], articleControler.updateArticleById);
 
-    articleRouter.get('/', articleControler.getArticles);
-    articleRouter.get('/id/:id', articleControler.getArticleById);
-    articleRouter.get('/slug/:slug', articleControler.getArticleBySlug);
+    articleRouter.get('/:articleId', [
+      AuthMiddleware.validateJWT,
+      RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER']),
+    ], articleControler.getArticleById);
+
+    articleRouter.put('/add/image/:articleId', [
+      AuthMiddleware.validateJWT,
+      RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER']),
+      FileUploadMiddleware.containFiles,
+    ], articleControler.addImagesToArticle);
+
+    articleRouter.put('/:articleId/remove/image/:imageId', [
+      AuthMiddleware.validateJWT,
+      RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER']),
+    ], articleControler.removeImageArticle);
+
+    articleRouter.post('/status/:articleId', [
+      AuthMiddleware.validateJWT,
+      RoleMiddleware.validRolesArticles(['ADMIN', 'SELLER', 'USER']),
+    ], articleControler.changeStatusArticle);
 
     return articleRouter;
   }

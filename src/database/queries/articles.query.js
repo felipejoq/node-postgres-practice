@@ -24,7 +24,7 @@ ON a.user_id = u.id
 LEFT JOIN images_article i
 ON a.id = i.article_id
 WHERE u.id = $1
-GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.create_at, a.updated_at, u.name, u.email, u.image
+GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.create_at, a.updated_at, u.id, u.name, u.email, u.image
 ORDER BY a.id
 OFFSET $2
 LIMIT $3

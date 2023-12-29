@@ -19,6 +19,7 @@ export class ProductRoutes {
 
     articleRouter.get('/', articleControler.getArticles);
     articleRouter.get('/slug/:slug', articleControler.getArticleBySlug);
+    articleRouter.get('/user/:userId', articleControler.getArticlesByUserId)
 
     articleRouter.post('/', [
       AuthMiddleware.validateJWT,

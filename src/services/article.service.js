@@ -4,6 +4,7 @@ import {
   CREATE_ARTICLE,
   DELETE_ARTICLE_BY_ID,
   GET_ALL_ARTICLES_WHIT_PAGINATION,
+  GET_ARTICLES_BY_USER_ID,
   GET_ARTICLES_WHIT_PAGINATION,
   GET_ARTICLE_BY_ID,
   GET_ARTICLE_BY_SLUG,
@@ -65,6 +66,29 @@ export class ArticleService {
 
   }
 
+  async getArticlesByUserId({ userId, page, limit }) {
+
+    const [articlesResult, totalArticlesResult] = await Promise.all([
+      query(GET_ARTICLES_BY_USER_ID, [userId, (page - 1) * limit, limit]),
+      query(GET_TOTAL_ARTICLES)
+    ]);
+
+    const articles = articlesResult?.rows;
+    const total = parseInt(totalArticlesResult?.rows[0].count);
+    const haveNext = (page * limit < total);
+    const havePrev = (page - 1 > 0) && (page + limit <= total);
+
+    return {
+      page,
+      limit,
+      total,
+      next: haveNext ? `/api/v1/article?page=${(page + 1)}&limit=${limit}` : null,
+      prev: havePrev ? `/api/v1/article?page=${(page - 1)}&limit=${limit}` : null,
+      articles,
+    };
+
+  }
+
   async getArticleById({ articleId, user }) {
 
     const { rows: [articleDb] } = await query(GET_ARTICLE_BY_ID, [articleId]);
@@ -72,15 +96,7 @@ export class ArticleService {
     if (!articleDb)
       throw CustomError.notFound('El artículo no existe o la id no es válida');
 
-    const { id: userId, roles } = user;
-    const { author: { id: authorId } } = articleDb;
-
-    // TODO: servicio para checkear autorización
-    const hasAllowedRole = roles.some(value => value.role === 'ADMIN' || value.role === 'SELLER');
-    const userIsOwner = +userId === +authorId;
-
-    if (!(hasAllowedRole || userIsOwner))
-      throw CustomError.notFound('No tiene permisos');
+    this.checkAuthorization(user, articleDb)
 
     return articleDb;
   }
@@ -93,7 +109,6 @@ export class ArticleService {
       throw CustomError.notFound('El artículo no existe o el slug no es válido');
 
     return article;
-
   }
 
   async createArticle(createArticleDto) {
@@ -121,13 +136,8 @@ export class ArticleService {
     const articleDb = await this.getArticleById({ articleId: +updateArticleDto.id, user: updateArticleDto.user });
 
     const { user: { id: userId, roles }, id, title, description, price, active } = updateArticleDto;
-    const { author: { id: authorId } } = articleDb;
 
-    const hasAllowedRole = roles.some(value => value.role === 'ADMIN' || value.role === 'SELLER');
-    const userIsOwner = userId === authorId;
-
-    if (!(hasAllowedRole || userIsOwner))
-      throw CustomError.notFound('No tiene permisos');
+    this.checkAuthorization(updateArticleDto.user, articleDb)
 
     await query(UPDATE_ARTICLE_BY_ID, [title, description, price, active, id]);
 
@@ -144,14 +154,7 @@ export class ArticleService {
     if (!articleDb)
       throw CustomError.notFound('El artículo no existe o la id no es válida');
 
-    const { id: userId, roles } = user;
-    const { author: { id: authorId } } = articleDb;
-
-    const hasAllowedRole = roles.some(value => value.role === 'ADMIN' || value.role === 'SELLER');
-    const userIsOwner = +userId === +authorId;
-
-    if (!(hasAllowedRole || userIsOwner))
-      throw CustomError.notFound('No tiene permisos');
+    this.checkAuthorization(user, articleDb);
 
     const { rows: [articleDeleted] } = await query(DELETE_ARTICLE_BY_ID, [articleId])
 

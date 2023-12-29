@@ -53,6 +53,21 @@ export class ArticleController {
       .catch(e => handleError(e, res));
   }
 
+  getArticlesByUserId = (req, res) => {
+
+    const { userId } = req.params;
+    const { page, limit } = req.query;
+    const [error, pagination] = PaginationDto.create({
+      page, limit
+    });
+
+    if (error) return res.status(400).json({ error });
+
+    this.articleService.getArticlesByUserId({ userId, page: pagination.page, limit: pagination.limit })
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
   createArticle = (req, res) => {
 
     const body = req.body;
@@ -107,7 +122,7 @@ export class ArticleController {
     const { articleId, imageId } = req.params;
     const { user } = req.body;
 
-    this.articleService.removeImageArticle({articleId, imageId, user})
+    this.articleService.removeImageArticle({ articleId, imageId, user })
       .then(data => res.json(data))
       .catch(e => handleError(e, res));
   }

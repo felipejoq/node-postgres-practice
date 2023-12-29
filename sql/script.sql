@@ -129,7 +129,7 @@ VALUES (
   7,
   '2023-12-24 12:37:00',
   '2023-12-24 12:37:00',
-  true
+  false
 ),(
   'Juego de mesa de estrategia',
   'Este juego es perfecto para cualquier amante de los juegos de mesa. Es desafiante y te mantendrá entretenido durante horas.',

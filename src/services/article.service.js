@@ -8,7 +8,8 @@ import {
   GET_ARTICLE_BY_ID,
   GET_ARTICLE_BY_SLUG,
   GET_TOTAL_ARTICLES,
-  UPDATE_ARTICLE_BY_ID
+  UPDATE_ARTICLE_BY_ID,
+  UPDATE_ARTICLE_STATUS
 } from "../database/queries/articles.query.js";
 import { Article } from "../domain/models/Article.js";
 
@@ -64,9 +65,9 @@ export class ArticleService {
 
   }
 
-  async getArticleById({ id, user }) {
+  async getArticleById({ articleId, user }) {
 
-    const { rows: [articleDb] } = await query(GET_ARTICLE_BY_ID, [id]);
+    const { rows: [articleDb] } = await query(GET_ARTICLE_BY_ID, [articleId]);
 
     if (!articleDb)
       throw CustomError.notFound('El artículo no existe o la id no es válida');
@@ -74,6 +75,7 @@ export class ArticleService {
     const { id: userId, roles } = user;
     const { author: { id: authorId } } = articleDb;
 
+    // TODO: servicio para checkear autorización
     const hasAllowedRole = roles.some(value => value.role === 'ADMIN' || value.role === 'SELLER');
     const userIsOwner = +userId === +authorId;
 
@@ -84,7 +86,7 @@ export class ArticleService {
   }
 
   async getArticleBySlug(slug) {
-
+    //TODO: No permitir si el artículo está inactivo
     const { rows: [article] } = await query(GET_ARTICLE_BY_SLUG, [slug]);
 
     if (!article)
@@ -108,7 +110,7 @@ export class ArticleService {
     const imagesToArticle = await this.imagesService.setImagesToArticle(urlImages, article.id, user.id);
 
     delete article.user_id;
-    article.user = user;
+    article.author = user;
     article.article_images = imagesToArticle;
 
     return article;
@@ -116,7 +118,7 @@ export class ArticleService {
 
   async updateArticleById(updateArticleDto) {
 
-    const articleDb = await this.getArticleById({ id: +updateArticleDto.id, user: updateArticleDto.user });
+    const articleDb = await this.getArticleById({ articleId: +updateArticleDto.id, user: updateArticleDto.user });
 
     const { user: { id: userId, roles }, id, title, description, price, active } = updateArticleDto;
     const { author: { id: authorId } } = articleDb;
@@ -129,15 +131,15 @@ export class ArticleService {
 
     await query(UPDATE_ARTICLE_BY_ID, [title, description, price, active, id]);
 
-    const articleUpdated = await this.getArticleById({ id: +updateArticleDto.id, user: updateArticleDto.user });
+    const articleUpdated = await this.getArticleById({ articleId: +updateArticleDto.id, user: updateArticleDto.user });
 
     return articleUpdated;
 
   }
 
-  async deleteArticleById({ id, user }) {
+  async deleteArticleById({ articleId, user }) {
 
-    const { rows: [articleDb] } = await query(GET_ARTICLE_BY_ID, [id]);
+    const { rows: [articleDb] } = await query(GET_ARTICLE_BY_ID, [articleId]);
 
     if (!articleDb)
       throw CustomError.notFound('El artículo no existe o la id no es válida');
@@ -151,9 +153,62 @@ export class ArticleService {
     if (!(hasAllowedRole || userIsOwner))
       throw CustomError.notFound('No tiene permisos');
 
-    const { rows: [articleDeleted] } = await query(DELETE_ARTICLE_BY_ID, [id])
+    const { rows: [articleDeleted] } = await query(DELETE_ARTICLE_BY_ID, [articleId])
 
     return articleDeleted;
+  }
+
+  async changeStatusArticle({ articleId, user }) {
+    const article = await this.getArticleById({ articleId, user });
+
+    const { active, id: idArticle } = article;
+
+    await query(UPDATE_ARTICLE_STATUS, [!active, idArticle]);
+
+    const articleUpdated = await this.getArticleById({ articleId, user });
+
+    return articleUpdated;
+  }
+
+  async addImagesToArticle({ articleId, user, files }) {
+
+    const article = await this.getArticleById({ articleId, user });
+
+    if (article.article_images.length > 10)
+      throw CustomError.notFound('Solo se permiten 10 imagenes por artículo');
+
+    const urlImages = await this.imagesService.uploadMultiple(files);
+
+    await this.imagesService.setImagesToArticle(urlImages, article.id, user.id);
+
+    const articleUpdated = await this.getArticleById({ articleId, user });
+
+    return articleUpdated;
+  }
+
+  async removeImageArticle({ articleId, imageId, user }) {
+
+    const article = await this.getArticleById({ articleId, user });
+
+    if (article.article_images.length === 1)
+      throw CustomError.notFound('El artículo debe tener al menos 1 imagen');
+
+    const removedImage = await this.imagesService.removeImageArticle(imageId, articleId, user.id)
+
+    return removedImage;
+  }
+
+  checkAuthorization(user, article) {
+    const { id: userId, roles } = user;
+    const { author: { id: authorId } } = article;
+
+    const hasAllowedRole = roles.some(value => value.role === 'ADMIN' || value.role === 'SELLER');
+    const userIsOwner = +userId === +authorId;
+
+    if (!(hasAllowedRole || userIsOwner))
+      throw CustomError.notFound('No tiene permisos');
+
+    return true;
   }
 
 }

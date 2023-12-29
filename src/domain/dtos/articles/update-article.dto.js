@@ -1,8 +1,8 @@
 export class UpdateArticleDto {
 
   constructor(args) {
-    const { id, title, description, slug, price, active, user } = args;
-    this.id = id;
+    const { articleId, title, description, slug, price, active, user } = args;
+    this.id = articleId;
     this.title = title;
     this.description = description;
     this.slug = slug;
@@ -11,11 +11,11 @@ export class UpdateArticleDto {
     this.user = user;
   }
 
-  static create({ id, body }) {
+  static create({ articleId, body }) {
 
     let { title, description, price, active, user } = body;
 
-    if (isNaN(+id))
+    if (isNaN(+articleId))
       return ['El id no es válido', null];
 
     if (!title || !description || !price || !user)
@@ -35,7 +35,7 @@ export class UpdateArticleDto {
 
     active = active ?? true;
 
-    return [null, new UpdateArticleDto({ id, title, description, price, active, user })];
+    return [null, new UpdateArticleDto({ articleId, title, description, price, active, user })];
 
   }
 }

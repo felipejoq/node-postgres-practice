@@ -7,7 +7,7 @@ export class ArticleController {
     this.articleService = articleService;
   }
 
-  getArticles = async (req, res) => {
+  getArticles = (req, res) => {
     const { page, limit } = req.query;
     const [error, pagination] = PaginationDto.create({
       page, limit
@@ -20,7 +20,7 @@ export class ArticleController {
       .catch(e => handleError(e, res));
   }
 
-  getAllArticles = async (req, res) => {
+  getAllArticles = (req, res) => {
     const { page, limit } = req.query;
     const [error, pagination] = PaginationDto.create({
       page, limit
@@ -33,19 +33,19 @@ export class ArticleController {
       .catch(e => handleError(e, res));
   }
 
-  getArticleById = async (req, res) => {
-    const { id } = req.params;
+  getArticleById = (req, res) => {
+    const { articleId } = req.params;
     const { user } = req.body;
 
-    if (isNaN(+id))
+    if (isNaN(+articleId))
       return res.status(400).json({ error: 'El id no es válido' });
 
-    this.articleService.getArticleById({ id, user })
+    this.articleService.getArticleById({ articleId, user })
       .then(data => res.json(data))
       .catch(e => handleError(e, res));
   }
 
-  getArticleBySlug = async (req, res) => {
+  getArticleBySlug = (req, res) => {
     const { slug } = req.params;
 
     this.articleService.getArticleBySlug(slug)
@@ -53,7 +53,7 @@ export class ArticleController {
       .catch(e => handleError(e, res));
   }
 
-  createArticle = async (req, res) => {
+  createArticle = (req, res) => {
 
     const body = req.body;
 
@@ -66,12 +66,12 @@ export class ArticleController {
       .catch(e => handleError(e, res));
   }
 
-  updateArticleById = async (req, res) => {
+  updateArticleById = (req, res) => {
 
-    const { id } = req.params;
+    const { articleId } = req.params;
     const body = req.body;
 
-    const [error, updateArticleDto] = UpdateArticleDto.create({ id, body });
+    const [error, updateArticleDto] = UpdateArticleDto.create({ articleId, body });
 
     if (error) return res.status(401).json({ error })
 
@@ -80,14 +80,44 @@ export class ArticleController {
       .catch(e => handleError(e, res));
   }
 
-  deleteArticleById = async (req, res) => {
-    const { id } = req.params;
+  deleteArticleById = (req, res) => {
+    const { articleId } = req.params;
     const { user } = req.body;
 
-    if (isNaN(+id))
+    if (isNaN(+articleId))
       return res.status(400).json({ error: 'El id no es válido' });
 
-    this.articleService.deleteArticleById({ id, user })
+    this.articleService.deleteArticleById({ articleId, user })
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+
+  addImagesToArticle = (req, res) => {
+    const { articleId } = req.params;
+    const { user, files } = req.body;
+
+    this.articleService.addImagesToArticle({ articleId, user, files })
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+  removeImageArticle = (req, res) => {
+
+    const { articleId, imageId } = req.params;
+    const { user } = req.body;
+
+    this.articleService.removeImageArticle({articleId, imageId, user})
+      .then(data => res.json(data))
+      .catch(e => handleError(e, res));
+  }
+
+  changeStatusArticle = (req, res) => {
+
+    const { articleId } = req.params;
+    const { user, status } = req.body;
+
+    this.articleService.changeStatusArticle({ articleId, user, status })
       .then(data => res.json(data))
       .catch(e => handleError(e, res));
   }

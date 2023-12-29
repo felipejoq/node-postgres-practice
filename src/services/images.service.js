@@ -75,8 +75,6 @@ export class ImagesService {
       throw CustomError.badRequest(`La imagen no existe`);
 
     const { rows: [imageDeleted] } = await query(DELETE_IMAGE_BY_ARTICLE_IMAGE_ID, [articleId, imageId]);
-    
-    console.log({ imageDeleted });
 
     if (!imageDeleted)
       throw CustomError.badRequest(`Ninguna imágen eliminada`);

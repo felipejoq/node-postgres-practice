@@ -29,17 +29,8 @@ export class ArticleService {
 
     const articles = articlesResult?.rows;
     const total = parseInt(totalArticlesResult?.rows[0].count);
-    const haveNext = (page * limit < total);
-    const havePrev = (page - 1 > 0) && (page + limit <= total);
 
-    return {
-      page,
-      limit,
-      total,
-      next: haveNext ? `/api/v1/article?page=${(page + 1)}&limit=${limit}` : null,
-      prev: havePrev ? `/api/v1/article?page=${(page - 1)}&limit=${limit}` : null,
-      articles,
-    };
+    return this.getResultsWithPagination({articles, total, page, limit});
 
   }
 
@@ -52,17 +43,8 @@ export class ArticleService {
 
     const articles = articlesResult?.rows;
     const total = parseInt(totalArticlesResult?.rows[0].count);
-    const haveNext = (page * limit < total);
-    const havePrev = (page - 1 > 0) && (page + limit <= total);
 
-    return {
-      page,
-      limit,
-      total,
-      next: haveNext ? `/api/v1/article?page=${(page + 1)}&limit=${limit}` : null,
-      prev: havePrev ? `/api/v1/article?page=${(page - 1)}&limit=${limit}` : null,
-      articles,
-    };
+    return this.getResultsWithPagination({articles, total, page, limit});
 
   }
 
@@ -75,17 +57,8 @@ export class ArticleService {
 
     const articles = articlesResult?.rows;
     const total = parseInt(totalArticlesResult?.rows[0].count);
-    const haveNext = (page * limit < total);
-    const havePrev = (page - 1 > 0) && (page + limit <= total);
-
-    return {
-      page,
-      limit,
-      total,
-      next: haveNext ? `/api/v1/article?page=${(page + 1)}&limit=${limit}` : null,
-      prev: havePrev ? `/api/v1/article?page=${(page - 1)}&limit=${limit}` : null,
-      articles,
-    };
+    
+    return this.getResultsWithPagination({articles, total, page, limit});
 
   }
 
@@ -102,7 +75,6 @@ export class ArticleService {
   }
 
   async getArticleBySlug(slug) {
-    //TODO: No permitir si el artículo está inactivo
     const { rows: [article] } = await query(GET_ARTICLE_BY_SLUG, [slug]);
 
     if (!article)
@@ -212,6 +184,21 @@ export class ArticleService {
       throw CustomError.notFound('No tiene permisos');
 
     return true;
+  }
+
+  getResultsWithPagination ({articles, total, page, limit}){
+    
+    const haveNext = (page * limit < total);
+    const havePrev = (page - 1 > 0) && (page + limit <= total);
+
+    return {
+      page,
+      limit,
+      total,
+      next: haveNext ? `/api/v1/article?page=${(page + 1)}&limit=${limit}` : null,
+      prev: havePrev ? `/api/v1/article?page=${(page - 1)}&limit=${limit}` : null,
+      articles,
+    };
   }
 
 }

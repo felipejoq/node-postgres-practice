@@ -180,7 +180,7 @@ UPDATE articles SET active = $1 WHERE id = $2
 `;
 
 export const DELETE_ARTICLE_BY_ID = `
-DELETE FROM articles WHERE id = $1 RETURNING *, id::integer
+DELETE FROM articles WHERE id = $1 RETURNING *, id::integer, price::float, user_id::integer
 `;
 
 export const SET_IMAGES_TO_ARTICLE = `

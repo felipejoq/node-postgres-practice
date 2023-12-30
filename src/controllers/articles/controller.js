@@ -56,6 +56,10 @@ export class ArticleController {
   getArticlesByUserId = (req, res) => {
 
     const { userId } = req.params;
+
+    if (isNaN(+userId))
+      return res.status(400).json({ error: 'El id no es válido' });
+
     const { page, limit } = req.query;
     const [error, pagination] = PaginationDto.create({
       page, limit
@@ -86,6 +90,9 @@ export class ArticleController {
     const { articleId } = req.params;
     const body = req.body;
 
+    if (isNaN(+articleId))
+      return res.status(400).json({ error: 'El id no es válido' });
+
     const [error, updateArticleDto] = UpdateArticleDto.create({ articleId, body });
 
     if (error) return res.status(401).json({ error })
@@ -112,6 +119,9 @@ export class ArticleController {
     const { articleId } = req.params;
     const { user, files } = req.body;
 
+    if (isNaN(+articleId))
+      return res.status(400).json({ error: 'El id no es válido' });
+
     this.articleService.addImagesToArticle({ articleId, user, files })
       .then(data => res.json(data))
       .catch(e => handleError(e, res));
@@ -122,6 +132,9 @@ export class ArticleController {
     const { articleId, imageId } = req.params;
     const { user } = req.body;
 
+    if (isNaN(+articleId) || isNaN(+imageId))
+      return res.status(400).json({ error: 'El id no es válido' });
+
     this.articleService.removeImageArticle({ articleId, imageId, user })
       .then(data => res.json(data))
       .catch(e => handleError(e, res));
@@ -131,6 +144,9 @@ export class ArticleController {
 
     const { articleId } = req.params;
     const { user, status } = req.body;
+
+    if (isNaN(+articleId))
+      return res.status(400).json({ error: 'El id no es válido' });
 
     this.articleService.changeStatusArticle({ articleId, user, status })
       .then(data => res.json(data))

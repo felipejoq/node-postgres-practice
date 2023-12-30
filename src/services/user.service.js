@@ -1,6 +1,7 @@
 import { CustomError } from "../config/errors/custom.errors.js";
 import { JwtAdapter } from "../config/plugins/Jwt.js";
 import { Encoder } from "../config/plugins/encoder.js";
+import { firebaseConfig } from "../config/storage/firebase.js";
 import { query } from "../database/db.js";
 import {
   CREATE_USER,
@@ -10,13 +11,16 @@ import {
   GET_USER_BY_EMAIL_WITH_ROLES,
   GET_USER_BY_ID_WITH_ROLES,
   UPDATE_USER_BY_ID,
+  UPDATE_USER_IMAGE_BY_ID,
 } from "../database/queries/users.query.js";
 import { User } from "../domain/models/User.js"
+import { ImagesService } from "./images.service.js";
 import { RoleService } from "./role.service.js";
 
 export class UserService {
   constructor() {
     this.roleService = new RoleService();
+    this.imageService = new ImagesService(firebaseConfig);
   }
 
   async getUsers({ page, limit }) {
@@ -138,6 +142,26 @@ export class UserService {
     if (isUpdate) return await this.getUserById(id);
 
     throw CustomError.internalServer('Error al actualizar el usuario');
+
+  }
+
+  async updateUserImageById({ userId, files }) {
+
+    if (files.length > 1)
+      throw CustomError.badRequest('Solo se permite una imagen de perfil');
+
+    const user = await this.getUserById(userId);
+
+    if (!user)
+      throw CustomError.badRequest('El usuario no existe');
+
+    const urlNewImage = await this.imageService.uploadImage(files[0], 'users');
+
+    await query(UPDATE_USER_IMAGE_BY_ID, [urlNewImage, userId]);
+
+    const userUpdated = await this.getUserById(userId);
+
+    return userUpdated;
 
   }
 

@@ -86,6 +86,18 @@ export class UsersController {
       .catch(e => handleError(e, res));
   }
 
+  updateUserImageById = (req, res) => {
+    const { id } = req.params;
+    const { files } = req.body;
+
+    if (isNaN(+id))
+      return res.status(400).json({ error: 'El id no es válido' });
+
+    this.userService.updateUserImageById({ userId: id, files })
+      .then(userUpdated => res.json(userUpdated))
+      .catch(e => handleError(e, res));
+  }
+
   updateRolesUser = (req, res) => {
 
     const { id } = req.params;

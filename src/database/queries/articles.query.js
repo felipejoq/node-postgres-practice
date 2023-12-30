@@ -6,7 +6,7 @@ SELECT
   a.slug,
   a.price,
   a.active,
-  a.create_at,
+  a.created_at,
   a.updated_at,
   json_build_object(
     'id', u.id::integer,
@@ -24,7 +24,7 @@ ON a.user_id = u.id
 LEFT JOIN images_article i
 ON a.id = i.article_id
 WHERE u.id = $1
-GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.create_at, a.updated_at, u.id, u.name, u.email, u.image
+GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.created_at, a.updated_at, u.id, u.name, u.email, u.image
 ORDER BY a.id
 OFFSET $2
 LIMIT $3
@@ -38,7 +38,7 @@ a.description,
 a.slug,
 a.price,
 a.active,
-a.create_at,
+a.created_at,
 a.updated_at,
 json_build_object(
   'id', u.id::integer,
@@ -56,7 +56,7 @@ ON a.user_id = u.id
 LEFT JOIN images_article i
 ON a.id = i.article_id
 WHERE a.active = true
-GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.create_at, a.updated_at, u.id, u.name, u.email, u.image
+GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.created_at, a.updated_at, u.id, u.name, u.email, u.image
 ORDER BY a.id
 OFFSET $1
 LIMIT $2
@@ -70,7 +70,7 @@ a.description,
 a.slug,
 a.price,
 a.active,
-a.create_at,
+a.created_at,
 a.updated_at,
 json_build_object(
   'id', u.id::integer,
@@ -87,7 +87,7 @@ INNER JOIN users u
 ON a.user_id = u.id
 LEFT JOIN images_article i
 ON a.id = i.article_id
-GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.create_at, a.updated_at, u.id, u.name, u.email, u.image
+GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.created_at, a.updated_at, u.id, u.name, u.email, u.image
 ORDER BY a.id
 OFFSET $1
 LIMIT $2
@@ -101,7 +101,7 @@ a.description,
 a.slug,
 a.price,
 a.active,
-a.create_at,
+a.created_at,
 a.updated_at,
 json_build_object(
   'id', u.id::integer,
@@ -119,7 +119,7 @@ ON a.user_id = u.id
 LEFT JOIN images_article i
 ON a.id = i.article_id
 WHERE a.id = $1
-GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.create_at, a.updated_at, u.id, u.name, u.email, u.image
+GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.created_at, a.updated_at, u.id, u.name, u.email, u.image
 `;
 
 export const GET_ARTICLE_BY_SLUG = `
@@ -130,7 +130,7 @@ a.description,
 a.slug,
 a.price,
 a.active,
-a.create_at,
+a.created_at,
 a.updated_at,
 json_build_object(
   'id', u.id::integer,
@@ -148,7 +148,7 @@ ON a.user_id = u.id
 LEFT JOIN images_article i
 ON a.id = i.article_id
 WHERE a.active = true AND a.slug = $1
-GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.create_at, a.updated_at, u.id, u.name, u.email, u.image
+GROUP BY a.id, a.title, a.description, a.slug, a.price, a.active, a.created_at, a.updated_at, u.id, u.name, u.email, u.image
 `;
 
 export const GET_TOTAL_ARTICLES = `

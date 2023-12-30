@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS
     slug VARCHAR NOT NULL,
     price DECIMAL(10,2),
     active BOOLEAN DEFAULT true NOT NULL,
-    create_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
+    created_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
     updated_at TIMESTAMP DEFAULT current_timestamp NOT NULL,
     user_id BIGINT,
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL
@@ -93,7 +93,7 @@ VALUES
   (6, 3),
   (7, 3);
 
-INSERT INTO articles (title, description, slug, price, user_id, create_at, updated_at, active)
+INSERT INTO articles (title, description, slug, price, user_id, created_at, updated_at, active)
 VALUES (
   'Lindo vestido de verano',
   'Este vestido es perfecto para una salida con amigos, una cena romántica o incluso una boda. Es elegante y sofisticado, pero también lo suficientemente informal para usarlo en el día a día.',

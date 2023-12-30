@@ -114,13 +114,14 @@ export class UserService {
   async updateUserById(userDto) {
 
     await this.roleService.checkAllowedRoles(userDto.roles);
+
     const user = await this.getUserById(userDto.id);
 
-    const { rows: [userUpdated] } = await query(UPDATE_USER_BY_ID, [userDto.name, userDto.email, userDto.active, user.id]);
+    await query(UPDATE_USER_BY_ID, [userDto.name, userDto.email, userDto.active, user.id]);
 
-    delete userUpdated.password;
+    const userDb = await this.getUserById(userDto.id);
 
-    return userUpdated;
+    return userDb;
   }
 
   async updateStatusUser(id) {

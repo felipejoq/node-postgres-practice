@@ -191,3 +191,7 @@ VALUES ($1, $2) RETURNING id::integer, url_img
 export const DELETE_IMAGE_BY_ARTICLE_IMAGE_ID = `
 DELETE FROM images_article WHERE article_id = $1 AND id = $2 RETURNING *, id::integer, article_id::integer
 `;
+
+export const GET_ALL_IMAGES_ARTICLES = `
+SELECT *, id::integer, article_id::integer FROM images_article
+`;

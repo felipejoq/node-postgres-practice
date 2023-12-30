@@ -70,6 +70,10 @@ export const GET_ROLE_BY_ID = `
 SELECT *, id::integer FROM roles WHERE id = $1
 `;
 
+export const GET_ALL_IMAGES_USERS = `
+SELECT image FROM users;
+`;
+
 export const CREATE_USER = `
 INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *, id::integer
 `;
@@ -84,6 +88,10 @@ UPDATE users SET name = $1, email = $2, active = $3 WHERE id = $4 RETURNING *, i
 
 export const UPDATE_STATUS_USER_BY_ID = `
 UPDATE users SET active = $1 WHERE id = $2 RETURNING *, id::integer
+`;
+
+export const UPDATE_USER_IMAGE_BY_ID = `
+UPDATE users SET image = $1 WHERE id = $2;
 `;
 
 export const DELETE_USER_BY_ID = `

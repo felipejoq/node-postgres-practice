@@ -1,11 +1,10 @@
 import pg from 'pg';
-import { envs } from '../config/plugins/envs.js';
 const { Pool } = pg;
 
 const pool = new Pool({
-  connectionString: envs.POSTGRES_URL,
   max: 10,
   idleTimeoutMillis: 10000,
+  // ssl: true,
 });
 
 export const query = async (query, params) => {
@@ -13,18 +12,23 @@ export const query = async (query, params) => {
 
   try {
     client = await pool.connect();
-    await client.query('BEGIN')
-    const result = await client.query(query, params);
-    await client.query('COMMIT')
-    return result;
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error(error);
-    throw error;
-  } finally {
-    if (client) {
-      client.release();
+    try {
+      await client.query('BEGIN');
+      const result = await client.query(query, params);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error(error);
+      throw error;
+    } finally {
+      if (client) {
+        client.release();
+      }
     }
+  } catch (error) {
+    console.error('Error al conectar al pool de PostgreSQL:', error);
+    throw error;
   }
 };
 

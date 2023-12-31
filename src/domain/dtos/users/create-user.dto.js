@@ -16,7 +16,7 @@ export class CreateUserDto {
     let { name, email, password, active } = body;
 
     const roles = [3];
-    active = !active ? active = true : !!active;
+    active = (typeof active === 'undefined') ? true : !!active;
 
     const result = createUserSchema.validate({ name, email, password, active, roles });
 

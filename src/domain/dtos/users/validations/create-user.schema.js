@@ -3,7 +3,6 @@ import Joi from 'joi';
 export const createUserSchema = Joi.object({
   name: Joi
     .string()
-    .alphanum()
     .min(3)
     .max(30)
     .required()
@@ -13,7 +12,7 @@ export const createUserSchema = Joi.object({
     .string()
     .email({ minDomainSegments: 2, tlds: { allow: ['test', 'com', 'net'] } })
     .required()
-    .error(new Error('El email es requerido, no cumple con el formato o no tiene extensiones permitidas: ["test", "com", "net"]')),
+    .error(new Error('El email es requerido, no cumple con el formato o no t iene extensiones permitidas: ["test", "com", "net"]')),
   password: Joi
     .string()
     .required()

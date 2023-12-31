@@ -2,15 +2,17 @@ import path from 'node:path';
 import express from 'express';
 import fileUpload from 'express-fileupload';
 import { URL } from 'url';
+import { CorsMiddleware } from './middlewares/cors.middleware.js';
 
 const __dirname = new URL('.', import.meta.url).pathname;
 
 export class Server {
 
-  constructor({ app, port, routes, publicPath = 'public', serverListener }) {
+  constructor({ app, port, routes, corsDomains, publicPath = 'public', serverListener }) {
     this.app = app;
     this.port = port;
     this.routes = routes;
+    this.corsDomains = corsDomains;
     this.publicPath = publicPath;
     this.serverListener = undefined;
   }
@@ -18,6 +20,7 @@ export class Server {
   async start() {
 
     //* Middlewares
+    this.app.use(CorsMiddleware.corsAllow(this.corsDomains))
     this.app.use(express.json()); // raw
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
     this.app.disable('x-powered-by');

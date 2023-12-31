@@ -11,7 +11,8 @@ const main = async () => {
   const server = new Server({
     app,
     port: envs.PORT,
-    routes: AppRouter.routes
+    routes: AppRouter.routes,
+    corsDomains: [],
   });
 
   server.start();

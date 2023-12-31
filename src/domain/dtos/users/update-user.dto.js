@@ -1,4 +1,5 @@
 import { regexs } from "../../../config/helpers/regexs.js";
+import { updateUserSchema } from "./validations/update-user.schema.js";
 
 export class UpdateUserDto {
   constructor(args) {
@@ -12,24 +13,13 @@ export class UpdateUserDto {
 
   static create({ id, body }) {
 
-    if (isNaN(+id))
-      return [`El parámetro ${id} no es válido`, null];
-
     let { name, email, active } = body;
 
-    if (!name || !email )
-      return ['Todos los campos son obligatorios', null];
+    const result = updateUserSchema.validate({ id, name, email, active });
 
-    if (name.trim().length <= 2)
-      return ['El nombre debe ser mayor a 2 caracteres', null];
+    if (result.error)
+      return [result.error.message, null]
 
-    if (email.trim().length <= 2)
-      return ['El email es demasiado corto', null];
-
-    if (regexs.email.test())
-      return ['No es un email válido', null];
-
-    // Default values
     const roles = [3];
     active = (typeof active === 'undefined') ? active = true : !!active;
 

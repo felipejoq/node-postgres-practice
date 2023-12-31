@@ -1,5 +1,5 @@
-import {v4 as uuid} from 'uuid';
+import crypto from 'node:crypto';
 
 export const getUUUID = () => {
-  return uuid();
+  return crypto.randomUUID();
 }

@@ -8,11 +8,11 @@ const __dirname = new URL('.', import.meta.url).pathname;
 
 export class Server {
 
-  constructor({ app, port, routes, corsDomains, publicPath = 'public', serverListener }) {
+  constructor({ app, port, routes, acceptedOrigins, publicPath = 'public', serverListener }) {
     this.app = app;
     this.port = port;
     this.routes = routes;
-    this.corsDomains = corsDomains;
+    this.acceptedOrigins = acceptedOrigins;
     this.publicPath = publicPath;
     this.serverListener = undefined;
   }
@@ -20,7 +20,7 @@ export class Server {
   async start() {
 
     //* Middlewares
-    this.app.use(CorsMiddleware.corsAllow(this.corsDomains))
+    this.app.use(CorsMiddleware.corsAllow({acceptedOrigins: this.acceptedOrigins}))
     this.app.use(express.json()); // raw
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
     this.app.disable('x-powered-by');

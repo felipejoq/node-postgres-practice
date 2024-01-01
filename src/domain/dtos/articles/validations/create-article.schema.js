@@ -19,7 +19,7 @@ export const createArticleSchema = Joi.object({
     .error(new Error('El precio es requerido y debe ser un número entero positivo')),
   active: Joi
     .boolean()
-    .optional(),
+    .default(true),
   user: Joi
     .required()
     .error(new Error('El usuario es requerido')),

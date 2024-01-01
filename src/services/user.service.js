@@ -109,8 +109,10 @@ export class UserService {
     if (!token) throw CustomError.internalServer('Error while creating JWT');
 
     return {
-      user,
-      token: token,
+      user: {
+        ...user,
+        token: token,
+      }
     }
 
   }

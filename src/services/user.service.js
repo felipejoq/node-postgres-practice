@@ -32,18 +32,8 @@ export class UserService {
 
     const users = usersResult?.rows;
     const total = parseInt(totalResult?.rows[0].count);
-    const haveNext = (page * limit < total);
-    const havePrev = (page - 1 > 0) && (page + limit <= total);
 
-    return {
-      page,
-      limit,
-      total,
-      next: haveNext ? `/api/v1/user?page=${(page + 1)}&limit=${limit}` : null,
-      prev: havePrev ? `/api/v1/user?page=${(page - 1)}&limit=${limit}` : null,
-      users: users,
-    };
-
+    return this.getResultsWithPagination({users, total, page, limit})
   }
 
   async getUserById(id) {
@@ -199,6 +189,21 @@ export class UserService {
     delete userDeleted.password
 
     return userDeleted;
+  }
+
+  getResultsWithPagination ({users, total, page, limit}){
+    
+    const haveNext = (page * limit < total);
+    const havePrev = (page - 1 > 0) && (page + limit <= total);
+
+    return {
+      page,
+      limit,
+      total,
+      next: haveNext ? `/api/v1/article?page=${(page + 1)}&limit=${limit}` : null,
+      prev: havePrev ? `/api/v1/article?page=${(page - 1)}&limit=${limit}` : null,
+      users,
+    };
   }
 
 }

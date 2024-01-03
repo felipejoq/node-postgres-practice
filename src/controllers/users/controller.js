@@ -53,8 +53,6 @@ export class UsersController {
   loginUser = (req, res) => {
     const { email, password } = req.body;
 
-    // if (error) return res.status(400).json({ error });
-
     this.userService.loginUser(email, password)
       .then(userLogin => res.json(userLogin))
       .catch(e => handleError(e, res));

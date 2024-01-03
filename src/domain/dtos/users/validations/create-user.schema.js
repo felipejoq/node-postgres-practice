@@ -23,6 +23,6 @@ export const createUserSchema = Joi.object({
     .length(1),
   active: Joi
     .boolean()
-    .optional()
+    .default(true)
     .error(new Error('Active debe ser booleano: true o false')),
 });

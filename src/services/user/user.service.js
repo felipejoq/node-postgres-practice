@@ -1,8 +1,8 @@
-import { CustomError } from "../config/errors/custom.errors.js";
-import { JwtAdapter } from "../config/plugins/Jwt.js";
-import { Encoder } from "../config/plugins/encoder.js";
-import { firebaseConfig } from "../config/storage/firebase.js";
-import { query } from "../database/db.js";
+import { CustomError } from "../../config/errors/custom.errors.js";
+import { JwtAdapter } from "../../config/plugins/Jwt.js";
+import { Encoder } from "../../config/plugins/encoder.js";
+import { firebaseConfig } from "../../config/storage/firebase.js";
+import { query } from "../../database/db.js";
 import {
   CREATE_USER,
   DELETE_USER_BY_ID,
@@ -12,10 +12,10 @@ import {
   GET_USER_BY_ID_WITH_ROLES,
   UPDATE_USER_BY_ID,
   UPDATE_USER_IMAGE_BY_ID,
-} from "../database/queries/users.query.js";
-import { User } from "../domain/models/User.js"
-import { ImagesService } from "./images.service.js";
-import { RoleService } from "./role.service.js";
+} from "../../database/queries/users.query.js";
+import { User } from "../../domain/models/User.js"
+import { ImagesService } from "../images/images.service.js";
+import { RoleService } from "../role/role.service.js";
 
 export class UserService {
   constructor() {

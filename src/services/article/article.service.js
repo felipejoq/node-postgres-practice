@@ -1,18 +1,18 @@
-import { CustomError } from "../config/errors/custom.errors.js";
-import { query } from "../database/db.js";
+import { CustomError } from "../../config/errors/custom.errors.js";
+import { query } from "../../database/db.js";
 import {
   CREATE_ARTICLE,
   DELETE_ARTICLE_BY_ID,
-  GET_ALL_ARTICLES_WHIT_PAGINATION,
   GET_ARTICLES_BY_USER_ID,
-  GET_ARTICLES_WHIT_PAGINATION,
   GET_ARTICLE_BY_ID,
   GET_ARTICLE_BY_SLUG,
   GET_TOTAL_ARTICLES,
   UPDATE_ARTICLE_BY_ID,
   UPDATE_ARTICLE_STATUS
-} from "../database/queries/articles.query.js";
-import { Article } from "../domain/models/Article.js";
+} from "../../database/queries/articles.query.js";
+import { Article } from "../../domain/models/Article.js";
+import { GetAllArticles } from "./uses-cases/get-all.js";
+import { GetPublicArticles } from "./uses-cases/get-public.js";
 
 export class ArticleService {
 
@@ -22,29 +22,17 @@ export class ArticleService {
 
   async getArticles({ page, limit }) {
 
-    const [articlesResult, totalArticlesResult] = await Promise.all([
-      query(GET_ARTICLES_WHIT_PAGINATION, [(page - 1) * limit, limit]),
-      query(GET_TOTAL_ARTICLES)
-    ]);
+    const { articles, total } = await GetPublicArticles.getArticles({ page, limit })
 
-    const articles = articlesResult?.rows;
-    const total = parseInt(totalArticlesResult?.rows[0].count);
-
-    return this.getResultsWithPagination({articles, total, page, limit});
+    return this.getResultsWithPagination({ articles, total, page, limit });
 
   }
 
   async getAllArticles({ page, limit }) {
 
-    const [articlesResult, totalArticlesResult] = await Promise.all([
-      query(GET_ALL_ARTICLES_WHIT_PAGINATION, [(page - 1) * limit, limit]),
-      query(GET_TOTAL_ARTICLES)
-    ]);
+    const { articles, total } = await GetAllArticles.getAllArticles({ page, limit });
 
-    const articles = articlesResult?.rows;
-    const total = parseInt(totalArticlesResult?.rows[0].count);
-
-    return this.getResultsWithPagination({articles, total, page, limit});
+    return this.getResultsWithPagination({ articles, total, page, limit });
 
   }
 
@@ -57,8 +45,8 @@ export class ArticleService {
 
     const articles = articlesResult?.rows;
     const total = parseInt(totalArticlesResult?.rows[0].count);
-    
-    return this.getResultsWithPagination({articles, total, page, limit});
+
+    return this.getResultsWithPagination({ articles, total, page, limit });
 
   }
 
@@ -186,8 +174,8 @@ export class ArticleService {
     return true;
   }
 
-  getResultsWithPagination ({articles, total, page, limit}){
-    
+  getResultsWithPagination({ articles, total, page, limit }) {
+
     const haveNext = (page * limit < total);
     const havePrev = (page - 1 > 0) && (page + limit <= total);
 

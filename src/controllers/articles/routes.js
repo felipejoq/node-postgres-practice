@@ -1,9 +1,8 @@
 import { Router } from "express";
 import { ArticleController } from './controller.js';
 import { AuthMiddleware, RoleMiddleware } from "../../middlewares/index.js";
-import { ArticleService } from "../../services/article.service.js";
+import { ArticleService, ImagesService } from "../../services/index.js";
 import { FileUploadMiddleware } from "../../middlewares/upload-files.middleware.js";
-import { ImagesService } from "../../services/images.service.js";
 import { firebaseConfig } from "../../config/storage/firebase.js";
 
 export class ProductRoutes {

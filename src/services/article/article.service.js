@@ -9,6 +9,7 @@ import {
   UPDATE_ARTICLE_STATUS
 } from "../../database/queries/articles.query.js";
 import { Article } from "../../domain/models/Article.js";
+import { GetArticleById } from "./articles-uses-cases/get-by-id.js";
 
 import {
   GetAllArticles,
@@ -48,7 +49,7 @@ export class ArticleService {
 
   async getArticleById({ articleId, user }) {
 
-    const { rows: [articleDb] } = await query(GET_ARTICLE_BY_ID, [articleId]);
+    const { articleDb } = await GetArticleById.getArticle({ articleId })
 
     if (!articleDb)
       throw CustomError.notFound('El artículo no existe o la id no es válida');

@@ -1,5 +1,5 @@
-import { CustomError } from "../config/errors/custom.errors.js";
-import { query } from "../database/db.js";
+import { CustomError } from "../../config/errors/custom.errors.js";
+import { query } from "../../database/db.js";
 import {
   DELETE_USERS_ROLES_BY_USER_ID,
   GET_ALL_ROLES_ID,
@@ -7,7 +7,7 @@ import {
   GET_ROL_BY_ID,
   SET_ROL_TO_USER,
   UPDATE_STATUS_USER_BY_ID
-} from "../database/queries/users.query.js";
+} from "../../database/queries/users.query.js";
 
 export class RoleService {
 

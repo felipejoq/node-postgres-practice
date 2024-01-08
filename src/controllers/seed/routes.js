@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { SeedController } from './controller.js';
 import { AuthMiddleware, RoleMiddleware } from "../../middlewares/index.js";
-import { SeedService } from "../../services/seed.service.js";
-import { ImagesService } from "../../services/images.service.js";
+import { SeedService, ImagesService } from "../../services/index.js";
 import { firebaseConfig } from "../../config/storage/firebase.js";
 
 export class SeedRoutes {

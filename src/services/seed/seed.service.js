@@ -1,7 +1,7 @@
-import { CustomError } from "../config/errors/custom.errors.js";
-import { CronPlugin } from "../config/plugins/cron.js";
-import { query } from "../database/db.js";
-import { RESTORE_DB } from "../database/queries/seed.query.js";
+import { CustomError } from "../../config/errors/custom.errors.js";
+import { CronPlugin } from "../../config/plugins/cron.js";
+import { query } from "../../database/db.js";
+import { RESTORE_DB } from "../../database/queries/seed.query.js";
 
 export class SeedService {
 

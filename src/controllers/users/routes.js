@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UsersController } from './controller.js';
-import { UserService } from "../../services/user.service.js";
+import { UserService } from "../../services/index.js";
 import { AuthMiddleware, RoleMiddleware } from "../../middlewares/index.js";
 import { FileUploadMiddleware } from "../../middlewares/upload-files.middleware.js";
 

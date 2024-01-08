@@ -1,6 +1,5 @@
 import { JwtAdapter } from "../config/plugins/Jwt.js";
-import { RoleService } from "../services/role.service.js";
-import { UserService } from "../services/user.service.js";
+import { RoleService, UserService } from "../services/index.js";
 
 export class AuthMiddleware {
 

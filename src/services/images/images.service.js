@@ -1,14 +1,14 @@
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { getUUUID } from "../config/plugins/uuid.js";
-import { query } from "../database/db.js";
-import { CustomError } from "../config/errors/custom.errors.js";
+import { getUUUID } from "../../config/plugins/uuid.js";
+import { query } from "../../database/db.js";
+import { CustomError } from "../../config/errors/custom.errors.js";
 import {
   DELETE_IMAGE_BY_ARTICLE_IMAGE_ID,
   GET_ALL_IMAGES_ARTICLES,
   GET_IMAGE_BY_ID, SET_IMAGES_TO_ARTICLE,
-} from "../database/queries/articles.query.js";
-import { GET_ALL_IMAGES_USERS } from "../database/queries/users.query.js";
+} from "../../database/queries/articles.query.js";
+import { GET_ALL_IMAGES_USERS } from "../../database/queries/users.query.js";
 
 export class ImagesService {
   constructor(firebaseConfig) {

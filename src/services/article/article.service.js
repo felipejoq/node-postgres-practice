@@ -3,16 +3,18 @@ import { query } from "../../database/db.js";
 import {
   CREATE_ARTICLE,
   DELETE_ARTICLE_BY_ID,
-  GET_ARTICLES_BY_USER_ID,
   GET_ARTICLE_BY_ID,
   GET_ARTICLE_BY_SLUG,
-  GET_TOTAL_ARTICLES,
   UPDATE_ARTICLE_BY_ID,
   UPDATE_ARTICLE_STATUS
 } from "../../database/queries/articles.query.js";
 import { Article } from "../../domain/models/Article.js";
-import { GetAllArticles } from "./uses-cases/get-all.js";
-import { GetPublicArticles } from "./uses-cases/get-public.js";
+
+import {
+  GetAllArticles,
+  GetArticlesByUser,
+  GetPublicArticles
+} from "./articles-uses-cases/index.js";
 
 export class ArticleService {
 
@@ -38,13 +40,7 @@ export class ArticleService {
 
   async getArticlesByUserId({ userId, page, limit }) {
 
-    const [articlesResult, totalArticlesResult] = await Promise.all([
-      query(GET_ARTICLES_BY_USER_ID, [userId, (page - 1) * limit, limit]),
-      query(GET_TOTAL_ARTICLES)
-    ]);
-
-    const articles = articlesResult?.rows;
-    const total = parseInt(totalArticlesResult?.rows[0].count);
+    const { articles, total } = await GetArticlesByUser.getArticlesByUserId({ userId, page, limit })
 
     return this.getResultsWithPagination({ articles, total, page, limit });
 
